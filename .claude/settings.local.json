@@ -23,7 +23,9 @@
       "Bash(git commit *)",
       "Bash(git branch *)",
       "Bash(git remote *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(node --check \"C:\\\\Users\\\\heide\\\\Desktop\\\\StudyAnker App !!\\\\api\\\\delete-account.cjs\")",
+      "Bash(node test-delete-load.cjs)"
     ]
   }
 }

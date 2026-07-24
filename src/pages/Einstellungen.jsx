@@ -19,7 +19,7 @@ export default function Einstellungen() {
       const response = await fetch('/api/delete-account', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ user_id: user.id }),
+        body: JSON.stringify({ userId: user.id }),
       })
 
       const data = await response.json()
