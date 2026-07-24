@@ -51,7 +51,7 @@ export default function KiZusammenfassung() {
   return (
     <div className="min-h-screen bg-anker-bg px-6 py-8">
       <div className="max-w-[500px] mx-auto">
-        <Link to="/" className="text-base text-slate-400 hover:text-slate-600">
+        <Link to="/" className="text-base text-anker-muted hover:text-anker-text">
           ← Zurück
         </Link>
 
@@ -65,12 +65,12 @@ export default function KiZusammenfassung() {
         {(status === 'laden' || status === 'denkt') && (
           <div className="flex flex-col items-center justify-center py-16">
             <div className="w-8 h-8 rounded-full border-2 border-anker-accent/20 border-t-anker-accent animate-spin mb-4" />
-            <p className="text-base text-slate-500">Ich lese deine letzten Sessions...</p>
+            <p className="text-base text-anker-muted">Ich lese deine letzten Sessions...</p>
           </div>
         )}
 
         {status === 'fertig' && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-3 text-lg text-slate-700 leading-relaxed">
+          <div className="bg-anker-card rounded-2xl border border-anker-border p-6 space-y-3 text-lg text-anker-text leading-relaxed">
             <ReactMarkdown
               components={{
                 p: ({ children }) => <p>{children}</p>,
@@ -83,8 +83,8 @@ export default function KiZusammenfassung() {
         )}
 
         {status === 'fehler' && (
-          <div className="bg-white rounded-2xl border border-red-200 p-6">
-            <p className="text-sm text-slate-400 mb-2">Fehlerdetails</p>
+          <div className="bg-anker-card rounded-2xl border border-red-200 p-6">
+            <p className="text-sm text-anker-muted mb-2">Fehlerdetails</p>
             <p className="text-base text-red-600 break-words whitespace-pre-wrap font-mono">{fehler}</p>
           </div>
         )}

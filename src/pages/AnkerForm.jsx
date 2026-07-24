@@ -5,6 +5,27 @@ import { useAuth } from '../contexts/AuthContext'
 
 const LEER = { fach: '', wo_war_ich: '', was_war_wichtig: '', naechster_schritt: '', feynman_satz: '' }
 
+function BestaetigungsAnsicht() {
+  const [sichtbar, setSichtbar] = useState(false)
+
+  useEffect(() => {
+    const t = setTimeout(() => setSichtbar(true), 10)
+    return () => clearTimeout(t)
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-anker-bg flex items-center justify-center">
+      <div
+        className="text-center"
+        style={{ opacity: sichtbar ? 1 : 0, transition: 'opacity 0.4s ease' }}
+      >
+        <p className="text-6xl mb-4">⚓</p>
+        <p className="text-xl font-semibold text-anker-accent">Anker gesetzt.</p>
+      </div>
+    </div>
+  )
+}
+
 export default function AnkerForm() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -16,6 +37,7 @@ export default function AnkerForm() {
   const [ladenFaecher, setLadenFaecher] = useState(true)
   const [ladenAnker, setLadenAnker] = useState(bearbeitenModus)
   const [saving, setSaving] = useState(false)
+  const [gespeichert, setGespeichert] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -55,6 +77,12 @@ export default function AnkerForm() {
     ankerLaden()
   }, [id, bearbeitenModus])
 
+  useEffect(() => {
+    if (!gespeichert) return
+    const t = setTimeout(() => navigate('/'), 1200)
+    return () => clearTimeout(t)
+  }, [gespeichert, navigate])
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
@@ -71,13 +99,17 @@ export default function AnkerForm() {
       return
     }
 
-    navigate('/')
+    setGespeichert(true)
+  }
+
+  if (gespeichert) {
+    return <BestaetigungsAnsicht />
   }
 
   if (ladenAnker) {
     return (
       <div className="min-h-screen bg-anker-bg flex items-center justify-center">
-        <p className="text-slate-500 text-base">Lädt...</p>
+        <p className="text-anker-muted text-base">Lädt...</p>
       </div>
     )
   }
@@ -85,7 +117,7 @@ export default function AnkerForm() {
   return (
     <div className="min-h-screen bg-anker-bg px-6 py-8">
       <div className="max-w-[500px] mx-auto">
-        <Link to="/" className="text-base text-slate-400 hover:text-slate-600">
+        <Link to="/" className="text-base text-anker-muted hover:text-anker-text">
           ← Zurück
         </Link>
 
@@ -95,17 +127,17 @@ export default function AnkerForm() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-base text-slate-600 mb-2">Welches Fach?</label>
+            <label className="block text-base text-anker-muted mb-2">Welches Fach?</label>
             <div className="flex gap-3">
               <select
                 required
                 value={form.fach}
                 onChange={(e) => setForm({ ...form, fach: e.target.value })}
                 disabled={ladenFaecher}
-                className="flex-1 px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+                className="flex-1 px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
               >
                 <option value="" disabled>
-                  {ladenFaecher ? 'Lädt...' : faecher.length === 0 ? 'Noch keine Fächer' : 'Fach wählen'}
+                  {ladenFaecher ? 'Lädt...' : faecher.length === 0 ? 'Noch keine Fächer' : 'Fach auswählen oder neu anlegen...'}
                 </option>
                 {faecher.map((f) => (
                   <option key={f.id} value={f.name}>
@@ -115,7 +147,7 @@ export default function AnkerForm() {
               </select>
               <Link
                 to="/faecher"
-                className="w-12 flex items-center justify-center text-xl bg-white border border-slate-200 rounded-xl text-anker-accent hover:bg-anker-bg"
+                className="w-12 flex items-center justify-center text-xl bg-anker-card border border-anker-border rounded-xl text-anker-accent hover:bg-anker-bg"
                 aria-label="Fach hinzufügen"
               >
                 +
@@ -124,51 +156,54 @@ export default function AnkerForm() {
           </div>
 
           <div>
-            <label className="block text-base text-slate-600 mb-2">
+            <label className="block text-base text-anker-muted mb-2">
               Wo genau bist du? (Kapitel, Seite, Thema)
             </label>
             <textarea
               rows={2}
+              placeholder="z.B. Kapitel 4, Seite 67 — Photosynthese"
               value={form.wo_war_ich}
               onChange={(e) => setForm({ ...form, wo_war_ich: e.target.value })}
-              className="w-full px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
             />
           </div>
 
           <div>
-            <label className="block text-base text-slate-600 mb-2">
+            <label className="block text-base text-anker-muted mb-2">
               Was solltest du nicht vergessen?
             </label>
             <textarea
               rows={2}
+              placeholder="z.B. Der Unterschied zwischen X und Y war mir neu"
               value={form.was_war_wichtig}
               onChange={(e) => setForm({ ...form, was_war_wichtig: e.target.value })}
-              className="w-full px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
             />
           </div>
 
           <div>
-            <label className="block text-base text-slate-600 mb-2">
+            <label className="block text-base text-anker-muted mb-2">
               Was ist dein erster Schritt beim nächsten Mal?
             </label>
             <textarea
               rows={2}
+              placeholder="z.B. Aufgaben 3-5 auf Seite 71 lösen"
               value={form.naechster_schritt}
               onChange={(e) => setForm({ ...form, naechster_schritt: e.target.value })}
-              className="w-full px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
             />
           </div>
 
-          <div className="pt-4 border-t border-slate-200">
-            <label className="block text-base text-slate-600 mb-2">
+          <div className="pt-4 border-t border-anker-border">
+            <label className="block text-base text-anker-muted mb-2">
               💡 Optional: Was hast du heute wirklich verstanden?
             </label>
             <textarea
               rows={2}
-              placeholder="Erkläre es in einem Satz, als würdest du es jemandem erklären..."
+              placeholder="z.B. Photosynthese ist wie eine Fabrik die aus Licht Zucker macht"
               value={form.feynman_satz}
               onChange={(e) => setForm({ ...form, feynman_satz: e.target.value })}
-              className="w-full px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
             />
           </div>
 

@@ -24,7 +24,7 @@ export default function Onboarding() {
             <h1 className="text-2xl font-semibold text-anker-accent mb-3">
               Hallo! Ich bin Klar, dein Lernbegleiter.
             </h1>
-            <p className="text-lg text-slate-600 mb-10">
+            <p className="text-lg text-anker-muted mb-10">
               StudyAnker hilft dir, nach jeder Pause sofort weiterzumachen.
             </p>
             <button
@@ -39,18 +39,18 @@ export default function Onboarding() {
         {schritt === 2 && (
           <>
             <div className="mb-10 space-y-4">
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 text-left">
-                <p className="text-sm text-slate-400 mb-1">Vor dem Aufhören</p>
-                <p className="text-lg text-slate-700">Anker setzen (30 Sekunden)</p>
+              <div className="bg-anker-card border border-anker-border rounded-2xl p-5 text-left">
+                <p className="text-sm text-anker-muted mb-1">Vor dem Aufhören</p>
+                <p className="text-lg text-anker-text">Anker setzen (30 Sekunden)</p>
               </div>
 
               <div className="flex justify-center">
-                <div className="w-px h-8 bg-slate-300" />
+                <div className="w-px h-8 bg-anker-border" />
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 text-left">
-                <p className="text-sm text-slate-400 mb-1">Beim Weitermachen</p>
-                <p className="text-lg text-slate-700">Anker lesen → sofort wissen wo du warst</p>
+              <div className="bg-anker-card border border-anker-border rounded-2xl p-5 text-left">
+                <p className="text-sm text-anker-muted mb-1">Beim Weitermachen</p>
+                <p className="text-lg text-anker-text">Anker lesen → sofort wissen wo du warst</p>
               </div>
             </div>
             <button

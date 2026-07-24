@@ -59,7 +59,7 @@ export default function FachVerwaltung() {
   return (
     <div className="min-h-screen bg-anker-bg px-6 py-8">
       <div className="max-w-[500px] mx-auto">
-        <Link to="/" className="text-base text-slate-400 hover:text-slate-600">
+        <Link to="/" className="text-base text-anker-muted hover:text-anker-text">
           ← Zurück
         </Link>
 
@@ -67,20 +67,20 @@ export default function FachVerwaltung() {
           Deine Fächer
         </h1>
 
-        <form onSubmit={hinzufuegen} className="bg-white rounded-2xl border border-slate-200 p-5 mb-8 space-y-4">
+        <form onSubmit={hinzufuegen} className="bg-anker-card rounded-2xl border border-anker-border p-5 mb-8 space-y-4">
           <div className="flex gap-3 items-center">
             <input
               type="color"
               value={farbe}
               onChange={(e) => setFarbe(e.target.value)}
-              className="w-12 h-12 rounded-lg border border-slate-200 cursor-pointer"
+              className="w-12 h-12 rounded-lg border border-anker-border cursor-pointer"
             />
             <input
               type="text"
               placeholder="Fach hinzufügen"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="flex-1 px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="flex-1 px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
             />
           </div>
 
@@ -96,26 +96,26 @@ export default function FachVerwaltung() {
         </form>
 
         {loading ? (
-          <p className="text-slate-500 text-base">Lädt...</p>
+          <p className="text-anker-muted text-base">Lädt...</p>
         ) : faecher.length === 0 ? (
-          <p className="text-slate-500 text-base">Noch keine Fächer angelegt.</p>
+          <p className="text-anker-muted text-base">Noch keine Fächer angelegt.</p>
         ) : (
           <div className="space-y-2">
             {faecher.map((f) => (
               <div
                 key={f.id}
-                className="flex items-center justify-between bg-white rounded-xl border border-slate-200 px-4 py-3"
+                className="flex items-center justify-between bg-anker-card rounded-xl border border-anker-border px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <span
                     className="w-4 h-4 rounded-full inline-block"
                     style={{ backgroundColor: f.farbe }}
                   />
-                  <span className="text-base text-slate-700">{f.name}</span>
+                  <span className="text-base text-anker-text">{f.name}</span>
                 </div>
                 <button
                   onClick={() => loeschen(f.id)}
-                  className="text-slate-400 hover:text-red-500 text-lg leading-none px-2"
+                  className="text-anker-muted hover:text-red-500 text-lg leading-none px-2"
                   aria-label={`${f.name} löschen`}
                 >
                   ✕

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
+import { formatDatum, tageSeit } from '../lib/formatDatum'
 
 const TIMER_STANDARD = 25
 const TIMER_MIN = 1
@@ -15,25 +16,10 @@ function hexZuRgba(hex, alpha) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
-function formatDatum(iso) {
-  return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
-
 function formatZeit(sekunden) {
   const min = Math.floor(sekunden / 60).toString().padStart(2, '0')
   const sek = (sekunden % 60).toString().padStart(2, '0')
   return `${min}:${sek}`
-}
-
-function tageSeit(iso) {
-  const diffMs = Date.now() - new Date(iso).getTime()
-  return Math.floor(diffMs / (1000 * 60 * 60 * 24))
-}
-
-function formatTageSeit(tage) {
-  if (tage <= 0) return 'heute'
-  if (tage === 1) return 'vor 1 Tag'
-  return `vor ${tage} Tagen`
 }
 
 export default function Dashboard() {
@@ -144,51 +130,54 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-anker-bg px-6 py-8">
       <div className="max-w-[500px] mx-auto">
-        <div className="flex justify-end mb-6">
-          <button onClick={signOut} className="text-sm text-slate-400 hover:text-slate-600">
+        <div className="flex justify-end items-center gap-4 mb-6">
+          <Link to="/einstellungen" className="text-lg text-anker-muted hover:text-anker-text" aria-label="Einstellungen">
+            ⚙️
+          </Link>
+          <button onClick={signOut} className="text-sm text-anker-muted hover:text-anker-text">
             Ausloggen
           </button>
         </div>
 
         {loading ? (
-          <p className="text-slate-500 text-base">Lädt...</p>
+          <p className="text-anker-muted text-base">Lädt...</p>
         ) : letzterAnker ? (
           <>
             <h1 className="text-2xl font-semibold text-anker-accent mb-6">Dein letzter Anker</h1>
             <div
-              className="bg-white rounded-2xl border border-slate-200 p-6 mb-4 space-y-4"
+              className="bg-anker-card rounded-2xl border border-anker-border p-6 mb-4 space-y-4"
               style={{
                 borderLeft: `4px solid ${fachFarbe(letzterAnker.fach)}`,
                 backgroundColor: hexZuRgba(fachFarbe(letzterAnker.fach), 0.1),
               }}
             >
-              <p className="text-lg font-semibold text-slate-800">{letzterAnker.fach}</p>
+              <p className="text-lg font-semibold text-anker-text">{letzterAnker.fach}</p>
 
               {letzterAnker.wo_war_ich && (
                 <div>
-                  <p className="text-sm text-slate-400 mb-1">Wo war ich</p>
-                  <p className="text-base text-slate-700">{letzterAnker.wo_war_ich}</p>
+                  <p className="text-sm text-anker-muted mb-1">Wo war ich</p>
+                  <p className="text-base text-anker-text">{letzterAnker.wo_war_ich}</p>
                 </div>
               )}
 
               {letzterAnker.was_war_wichtig && (
                 <div>
-                  <p className="text-sm text-slate-400 mb-1">Was war wichtig</p>
-                  <p className="text-base text-slate-700">{letzterAnker.was_war_wichtig}</p>
+                  <p className="text-sm text-anker-muted mb-1">Was war wichtig</p>
+                  <p className="text-base text-anker-text">{letzterAnker.was_war_wichtig}</p>
                 </div>
               )}
 
               {letzterAnker.naechster_schritt && (
                 <div>
-                  <p className="text-sm text-slate-400 mb-1">Nächster Schritt</p>
-                  <p className="text-base text-slate-700">{letzterAnker.naechster_schritt}</p>
+                  <p className="text-sm text-anker-accent font-medium mb-1">Nächster Schritt</p>
+                  <p className="text-base font-semibold text-anker-text">→ {letzterAnker.naechster_schritt}</p>
                 </div>
               )}
             </div>
 
             {letzterAnker.feynman_satz && !timerLaeuft && !timerFertig && (
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-4 space-y-3">
-                <p className="text-base text-slate-700">
+              <div className="bg-anker-card rounded-2xl border border-anker-border p-6 mb-4 space-y-3">
+                <p className="text-base text-anker-text">
                   Erinnerst du dich noch? → {letzterAnker.feynman_satz}
                 </p>
                 <input
@@ -196,7 +185,7 @@ export default function Dashboard() {
                   placeholder="Was fällt dir dazu noch ein?"
                   value={retrievalAntwort}
                   onChange={(e) => setRetrievalAntwort(e.target.value)}
-                  className="w-full px-4 py-2 text-base bg-anker-bg border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+                  className="w-full px-4 py-2 text-base bg-anker-bg border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
                 />
               </div>
             )}
@@ -216,8 +205,8 @@ export default function Dashboard() {
                         className="w-2 h-2 rounded-full inline-block"
                         style={{ backgroundColor: fachFarbe(k.fach) }}
                       />
-                      <span className="text-slate-500">
-                        {k.fach} — zuletzt {formatTageSeit(tage)}
+                      <span className="text-anker-muted">
+                        {k.fach} — zuletzt {formatDatum(k.created_at).toLowerCase()}
                       </span>
                     </div>
                   )
@@ -227,8 +216,8 @@ export default function Dashboard() {
 
             <div className="mb-8">
               {timerFertig ? (
-                <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center">
-                  <p className="text-base text-slate-700 mb-4">{timerMinuten} Minuten geschafft! 🎉 Anker aktualisieren?</p>
+                <div className="bg-anker-card rounded-2xl border border-anker-border p-6 text-center">
+                  <p className="text-base text-anker-text mb-4">{timerMinuten} Minuten geschafft! 🎉 Anker aktualisieren?</p>
                   <Link
                     to="/anker/neu"
                     className="block w-full text-center bg-anker-accent text-white py-3 rounded-xl text-base font-medium hover:opacity-90"
@@ -237,20 +226,20 @@ export default function Dashboard() {
                   </Link>
                 </div>
               ) : timerLaeuft ? (
-                <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center">
+                <div className="bg-anker-card rounded-2xl border border-anker-border p-6 text-center">
                   <p className="text-4xl font-semibold text-anker-accent tracking-wide mb-4">
                     {formatZeit(verbleibend)}
                   </p>
                   <button
                     onClick={timerAbbrechen}
-                    className="w-full text-center border border-slate-300 text-slate-600 py-3 rounded-xl text-base font-medium hover:bg-slate-50"
+                    className="w-full text-center border border-anker-border text-anker-text py-3 rounded-xl text-base font-medium hover:bg-anker-bg"
                   >
                     Timer läuft... (abbrechen)
                   </button>
                 </div>
               ) : (
-                <div className="bg-white rounded-2xl border border-slate-200 p-6">
-                  <label className="block text-sm text-slate-400 mb-2 text-center">
+                <div className="bg-anker-card rounded-2xl border border-anker-border p-6">
+                  <label className="block text-sm text-anker-muted mb-2 text-center">
                     Wie viele Minuten?
                   </label>
                   <div className="flex items-center justify-center gap-3 mb-5">
@@ -274,9 +263,9 @@ export default function Dashboard() {
                           setTimerMinuten(TIMER_STANDARD)
                         }
                       }}
-                      className="w-28 text-center text-4xl font-semibold text-anker-accent border border-slate-200 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+                      className="w-28 text-center text-4xl font-semibold text-anker-accent border border-anker-border rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
                     />
-                    <span className="text-lg text-slate-500">Minuten</span>
+                    <span className="text-lg text-anker-muted">Minuten</span>
                   </div>
                   <button
                     onClick={timerStarten}
@@ -321,17 +310,17 @@ export default function Dashboard() {
 
         {weitereAnker.length > 0 && (
           <div>
-            <p className="text-sm text-slate-400 mb-3">Zuletzt</p>
+            <p className="text-sm text-anker-muted mb-3">Zuletzt</p>
             <div className="space-y-2">
               {weitereAnker.map((a) => (
                 <div
                   key={a.id}
-                  className="relative bg-white rounded-xl border border-slate-200 px-4 py-3"
+                  className="relative bg-anker-card rounded-xl border border-anker-border px-4 py-3"
                   style={{ borderLeft: `4px solid ${fachFarbe(a.fach)}` }}
                 >
                   {loeschenBestaetigen === a.id ? (
                     <div className="flex items-center justify-between">
-                      <span className="text-base text-slate-700">Wirklich löschen?</span>
+                      <span className="text-base text-anker-text">Wirklich löschen?</span>
                       <div className="flex gap-2">
                         <button
                           onClick={() => ankerLoeschen(a.id)}
@@ -341,7 +330,7 @@ export default function Dashboard() {
                         </button>
                         <button
                           onClick={() => setLoeschenBestaetigen(null)}
-                          className="text-sm text-slate-500 px-2 py-1 hover:bg-slate-50 rounded-lg"
+                          className="text-sm text-anker-muted px-2 py-1 hover:bg-anker-bg rounded-lg"
                         >
                           Abbrechen
                         </button>
@@ -349,12 +338,12 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <div className="flex justify-between items-center">
-                      <span className="text-base text-slate-700">{a.fach}</span>
+                      <span className="text-base text-anker-text">{a.fach}</span>
                       <div className="flex items-center gap-3">
-                        <span className="text-sm text-slate-400">{formatDatum(a.created_at)}</span>
+                        <span className="text-sm text-anker-muted">{formatDatum(a.created_at)}</span>
                         <button
                           onClick={() => setOffenesMenu(offenesMenu === a.id ? null : a.id)}
-                          className="text-slate-400 hover:text-slate-600 px-1 text-lg leading-none"
+                          className="text-anker-muted hover:text-anker-text px-1 text-lg leading-none"
                           aria-label="Optionen"
                         >
                           ···
@@ -364,10 +353,10 @@ export default function Dashboard() {
                   )}
 
                   {offenesMenu === a.id && loeschenBestaetigen !== a.id && (
-                    <div className="absolute right-4 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-md overflow-hidden z-10">
+                    <div className="absolute right-4 top-full mt-1 bg-anker-card border border-anker-border rounded-xl shadow-md overflow-hidden z-10">
                       <button
                         onClick={() => navigate(`/anker/bearbeiten/${a.id}`)}
-                        className="block w-full text-left px-4 py-2 text-base text-slate-700 hover:bg-slate-50"
+                        className="block w-full text-left px-4 py-2 text-base text-anker-text hover:bg-anker-bg"
                       >
                         Bearbeiten
                       </button>

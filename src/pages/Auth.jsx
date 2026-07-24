@@ -66,30 +66,30 @@ export default function Auth() {
       <div className="w-full max-w-[400px]">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-semibold text-anker-accent">StudyAnker</h1>
-          <p className="mt-2 text-slate-500 text-base">Weißt du noch wo du warst?</p>
+          <p className="mt-2 text-anker-muted text-base">Weißt du noch wo du warst?</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-base text-slate-600 mb-2">E-Mail</label>
+            <label className="block text-base text-anker-muted mb-2">E-Mail</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
             />
           </div>
 
           <div>
-            <label className="block text-base text-slate-600 mb-2">Passwort</label>
+            <label className="block text-base text-anker-muted mb-2">Passwort</label>
             <input
               type="password"
               required
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
             />
           </div>
 
@@ -108,15 +108,15 @@ export default function Auth() {
         {mode === 'signin' && (
           <button
             onClick={() => { setResetOffen(!resetOffen); setResetInfo(''); setResetError('') }}
-            className="mt-4 text-sm text-slate-400 hover:text-slate-600 w-full text-center"
+            className="mt-4 text-sm text-anker-muted hover:text-anker-text w-full text-center"
           >
             Passwort vergessen?
           </button>
         )}
 
         {resetOffen && (
-          <form onSubmit={handleReset} className="mt-4 p-4 bg-white border border-slate-200 rounded-xl space-y-3">
-            <label className="block text-sm text-slate-600">
+          <form onSubmit={handleReset} className="mt-4 p-4 bg-anker-card border border-anker-border rounded-xl space-y-3">
+            <label className="block text-sm text-anker-muted">
               Wir schicken dir einen Link zum Zurücksetzen.
             </label>
             <input
@@ -125,7 +125,7 @@ export default function Auth() {
               placeholder="E-Mail"
               value={resetEmail}
               onChange={(e) => setResetEmail(e.target.value)}
-              className="w-full px-3 py-2 text-base bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="w-full px-3 py-2 text-base bg-anker-card border border-anker-border rounded-lg focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
             />
 
             {resetError && <p className="text-sm text-red-600">{resetError}</p>}

@@ -1,17 +1,19 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { useTheme } from './useTheme'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import AnkerForm from './pages/AnkerForm'
 import KiZusammenfassung from './pages/KiZusammenfassung'
 import Onboarding from './pages/Onboarding'
 import FachVerwaltung from './pages/FachVerwaltung'
+import Einstellungen from './pages/Einstellungen'
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-slate-500">Lädt...</div>
+    return <div className="min-h-screen flex items-center justify-center text-anker-muted">Lädt...</div>
   }
 
   return user ? children : <Navigate to="/login" replace />
@@ -74,11 +76,21 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
+      <Route
+        path="/einstellungen"
+        element={
+          <PrivateRoute>
+            <Einstellungen />
+          </PrivateRoute>
+        }
+      />
     </Routes>
   )
 }
 
 function App() {
+  useTheme()
+
   return (
     <AuthProvider>
       <AppRoutes />
