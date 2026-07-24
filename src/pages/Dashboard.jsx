@@ -7,6 +7,25 @@ const TIMER_STANDARD = 25
 const TIMER_MIN = 1
 const TIMER_MAX = 180
 
+const fachFarben = {
+  Mathe: '#4A90D9',
+  Englisch: '#E8A838',
+  Deutsch: '#D94A4A',
+  Informatik: '#4AD94A',
+  default: '#2D4A6B',
+}
+
+function fachFarbe(fach) {
+  return fachFarben[fach] ?? fachFarben.default
+}
+
+function hexZuRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
 function formatDatum(iso) {
   return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
@@ -78,7 +97,7 @@ export default function Dashboard() {
   }
 
   const letzterAnker = anker[0]
-  const weitereAnker = anker.slice(1, 4)
+  const weitereAnker = anker.slice(1, 4).filter((a) => a.fach && a.fach.trim() !== '')
 
   return (
     <div className="min-h-screen bg-anker-bg px-6 py-8">
@@ -94,7 +113,13 @@ export default function Dashboard() {
         ) : letzterAnker ? (
           <>
             <h1 className="text-2xl font-semibold text-anker-accent mb-6">Dein letzter Anker</h1>
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-4 space-y-4">
+            <div
+              className="bg-white rounded-2xl border border-slate-200 p-6 mb-4 space-y-4"
+              style={{
+                borderLeft: `4px solid ${fachFarbe(letzterAnker.fach)}`,
+                backgroundColor: hexZuRgba(fachFarbe(letzterAnker.fach), 0.1),
+              }}
+            >
               <p className="text-lg font-semibold text-slate-800">{letzterAnker.fach}</p>
 
               {letzterAnker.wo_war_ich && (
@@ -213,6 +238,7 @@ export default function Dashboard() {
                 <div
                   key={a.id}
                   className="flex justify-between items-center bg-white rounded-xl border border-slate-200 px-4 py-3"
+                  style={{ borderLeft: `4px solid ${fachFarbe(a.fach)}` }}
                 >
                   <span className="text-base text-slate-700">{a.fach}</span>
                   <span className="text-sm text-slate-400">{formatDatum(a.created_at)}</span>

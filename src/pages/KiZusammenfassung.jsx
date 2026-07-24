@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import ReactMarkdown from 'react-markdown'
 import { supabase } from '../lib/supabaseClient'
 
 export default function KiZusammenfassung() {
@@ -66,8 +67,15 @@ export default function KiZusammenfassung() {
         )}
 
         {status === 'fertig' && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-6">
-            <p className="text-lg text-slate-700 leading-relaxed whitespace-pre-line">{text}</p>
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-3 text-lg text-slate-700 leading-relaxed">
+            <ReactMarkdown
+              components={{
+                p: ({ children }) => <p>{children}</p>,
+                strong: ({ children }) => <strong className="text-anker-accent">{children}</strong>,
+              }}
+            >
+              {text}
+            </ReactMarkdown>
           </div>
         )}
 
