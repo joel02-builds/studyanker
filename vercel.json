@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/api/delete-account", "destination": "/api/delete-account" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
 }

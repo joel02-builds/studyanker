@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
+import { useSpeechInput } from '../useSpeechInput'
 
 const LEER = { fach: '', wo_war_ich: '', was_war_wichtig: '', naechster_schritt: '', feynman_satz: '' }
 
@@ -21,6 +22,37 @@ function BestaetigungsAnsicht() {
       >
         <p className="text-6xl mb-4">⚓</p>
         <p className="text-xl font-semibold text-anker-accent">Anker gesetzt.</p>
+      </div>
+    </div>
+  )
+}
+
+function SprachFeld({ label, placeholder, value, onChange, rows = 2 }) {
+  const { isListening, startListening, stopListening, supported } = useSpeechInput((text) => {
+    onChange(value ? `${value} ${text}` : text)
+  })
+
+  return (
+    <div>
+      <label className="block text-base text-anker-muted mb-2">{label}</label>
+      <div className="relative">
+        <textarea
+          rows={rows}
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`w-full px-4 py-3 ${supported ? 'pr-12' : ''} text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent`}
+        />
+        {supported && (
+          <button
+            type="button"
+            onClick={() => (isListening ? stopListening() : startListening())}
+            className={`absolute top-3 right-3 text-lg leading-none ${isListening ? 'animate-pulse text-red-500' : 'text-anker-muted hover:text-anker-accent'}`}
+            aria-label={isListening ? 'Aufnahme stoppen' : 'Spracheingabe starten'}
+          >
+            🎤
+          </button>
+        )}
       </div>
     </div>
   )
@@ -155,55 +187,33 @@ export default function AnkerForm() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-base text-anker-muted mb-2">
-              Wo genau bist du? (Kapitel, Seite, Thema)
-            </label>
-            <textarea
-              rows={2}
-              placeholder="z.B. Kapitel 4, Seite 67 — Photosynthese"
-              value={form.wo_war_ich}
-              onChange={(e) => setForm({ ...form, wo_war_ich: e.target.value })}
-              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
-            />
-          </div>
+          <SprachFeld
+            label="Wo genau bist du? (Kapitel, Seite, Thema)"
+            placeholder="z.B. Kapitel 4, Seite 67 — Photosynthese"
+            value={form.wo_war_ich}
+            onChange={(text) => setForm((f) => ({ ...f, wo_war_ich: text }))}
+          />
 
-          <div>
-            <label className="block text-base text-anker-muted mb-2">
-              Was solltest du nicht vergessen?
-            </label>
-            <textarea
-              rows={2}
-              placeholder="z.B. Der Unterschied zwischen X und Y war mir neu"
-              value={form.was_war_wichtig}
-              onChange={(e) => setForm({ ...form, was_war_wichtig: e.target.value })}
-              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
-            />
-          </div>
+          <SprachFeld
+            label="Was solltest du nicht vergessen?"
+            placeholder="z.B. Der Unterschied zwischen X und Y war mir neu"
+            value={form.was_war_wichtig}
+            onChange={(text) => setForm((f) => ({ ...f, was_war_wichtig: text }))}
+          />
 
-          <div>
-            <label className="block text-base text-anker-muted mb-2">
-              Was ist dein erster Schritt beim nächsten Mal?
-            </label>
-            <textarea
-              rows={2}
-              placeholder="z.B. Aufgaben 3-5 auf Seite 71 lösen"
-              value={form.naechster_schritt}
-              onChange={(e) => setForm({ ...form, naechster_schritt: e.target.value })}
-              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
-            />
-          </div>
+          <SprachFeld
+            label="Was ist dein erster Schritt beim nächsten Mal?"
+            placeholder="z.B. Aufgaben 3-5 auf Seite 71 lösen"
+            value={form.naechster_schritt}
+            onChange={(text) => setForm((f) => ({ ...f, naechster_schritt: text }))}
+          />
 
           <div className="pt-4 border-t border-anker-border">
-            <label className="block text-base text-anker-muted mb-2">
-              💡 Optional: Was hast du heute wirklich verstanden?
-            </label>
-            <textarea
-              rows={2}
+            <SprachFeld
+              label="💡 Optional: Was hast du heute wirklich verstanden?"
               placeholder="z.B. Photosynthese ist wie eine Fabrik die aus Licht Zucker macht"
               value={form.feynman_satz}
-              onChange={(e) => setForm({ ...form, feynman_satz: e.target.value })}
-              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              onChange={(text) => setForm((f) => ({ ...f, feynman_satz: text }))}
             />
           </div>
 

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../useTheme'
 
@@ -16,17 +15,25 @@ export default function Einstellungen() {
     setLoeschenLaeuft(true)
     setError('')
 
-    const { error: ankerError } = await supabase.from('anker').delete().eq('user_id', user.id)
-    const { error: faecherError } = await supabase.from('faecher').delete().eq('user_id', user.id)
+    try {
+      const response = await fetch('/api/delete-account', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id }),
+      })
 
-    if (ankerError || faecherError) {
-      setError((ankerError ?? faecherError).message)
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error ?? `Serverfehler (${response.status})`)
+      }
+
+      await signOut()
+      navigate('/login')
+    } catch (e) {
+      setError(e.message)
       setLoeschenLaeuft(false)
-      return
     }
-
-    await signOut()
-    navigate('/login')
   }
 
   return (
