@@ -25,15 +25,28 @@ function formatZeit(sekunden) {
   return `${min}:${sek}`
 }
 
+function tageSeit(iso) {
+  const diffMs = Date.now() - new Date(iso).getTime()
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24))
+}
+
+function formatTageSeit(tage) {
+  if (tage <= 0) return 'heute'
+  if (tage === 1) return 'vor 1 Tag'
+  return `vor ${tage} Tagen`
+}
+
 export default function Dashboard() {
   const { signOut } = useAuth()
   const navigate = useNavigate()
   const [anker, setAnker] = useState([])
   const [ankerAnzahl, setAnkerAnzahl] = useState(0)
   const [fachFarben, setFachFarben] = useState({})
+  const [letzterKontakt, setLetzterKontakt] = useState([])
   const [loading, setLoading] = useState(true)
   const [offenesMenu, setOffenesMenu] = useState(null)
   const [loeschenBestaetigen, setLoeschenBestaetigen] = useState(null)
+  const [retrievalAntwort, setRetrievalAntwort] = useState('')
 
   const [timerMinuten, setTimerMinuten] = useState(TIMER_STANDARD)
   const [timerLaeuft, setTimerLaeuft] = useState(false)
@@ -63,6 +76,24 @@ export default function Dashboard() {
     const { data: faecher } = await supabase.from('faecher').select('name, farbe')
     if (faecher) {
       setFachFarben(Object.fromEntries(faecher.map((f) => [f.name, f.farbe])))
+    }
+
+    const { data: alleAnker } = await supabase
+      .from('anker')
+      .select('fach, created_at')
+      .order('created_at', { ascending: false })
+
+    if (alleAnker) {
+      const letzterProFach = new Map()
+      for (const a of alleAnker) {
+        if (!a.fach || a.fach.trim() === '') continue
+        if (!letzterProFach.has(a.fach)) letzterProFach.set(a.fach, a.created_at)
+      }
+      setLetzterKontakt(
+        Array.from(letzterProFach.entries())
+          .map(([fach, created_at]) => ({ fach, created_at }))
+          .slice(0, 3)
+      )
     }
 
     setLoading(false)
@@ -155,6 +186,45 @@ export default function Dashboard() {
               )}
             </div>
 
+            {letzterAnker.feynman_satz && !timerLaeuft && !timerFertig && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-4 space-y-3">
+                <p className="text-base text-slate-700">
+                  Erinnerst du dich noch? → {letzterAnker.feynman_satz}
+                </p>
+                <input
+                  type="text"
+                  placeholder="Was fällt dir dazu noch ein?"
+                  value={retrievalAntwort}
+                  onChange={(e) => setRetrievalAntwort(e.target.value)}
+                  className="w-full px-4 py-2 text-base bg-anker-bg border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+                />
+              </div>
+            )}
+
+            {letzterKontakt.length > 0 && (
+              <div className="mb-4 space-y-1.5">
+                {letzterKontakt.map((k) => {
+                  const tage = tageSeit(k.created_at)
+                  const gedimmt = tage > 5
+                  return (
+                    <div
+                      key={k.fach}
+                      className="flex items-center gap-2 text-sm"
+                      style={{ opacity: gedimmt ? 0.5 : 1 }}
+                    >
+                      <span
+                        className="w-2 h-2 rounded-full inline-block"
+                        style={{ backgroundColor: fachFarbe(k.fach) }}
+                      />
+                      <span className="text-slate-500">
+                        {k.fach} — zuletzt {formatTageSeit(tage)}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
             <div className="mb-8">
               {timerFertig ? (
                 <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center">
@@ -223,12 +293,12 @@ export default function Dashboard() {
           <div className="mb-8 text-center">
             <img
               src="/maskottchen.png"
-              alt=""
+              alt="Klar"
               className="mx-auto mb-4"
               style={{ height: '80px' }}
             />
             <h1 className="text-2xl font-semibold text-anker-accent">
-              Noch kein Anker — fang jetzt an
+              Klar ist bereit — setz deinen ersten Anker ⚓
             </h1>
           </div>
         )}

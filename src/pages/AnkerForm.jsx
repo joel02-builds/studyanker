@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
 
-const LEER = { fach: '', wo_war_ich: '', was_war_wichtig: '', naechster_schritt: '' }
+const LEER = { fach: '', wo_war_ich: '', was_war_wichtig: '', naechster_schritt: '', feynman_satz: '' }
 
 export default function AnkerForm() {
   const { user } = useAuth()
@@ -47,6 +47,7 @@ export default function AnkerForm() {
           wo_war_ich: data.wo_war_ich ?? '',
           was_war_wichtig: data.was_war_wichtig ?? '',
           naechster_schritt: data.naechster_schritt ?? '',
+          feynman_satz: data.feynman_satz ?? '',
         })
       }
       setLadenAnker(false)
@@ -154,6 +155,19 @@ export default function AnkerForm() {
               rows={2}
               value={form.naechster_schritt}
               onChange={(e) => setForm({ ...form, naechster_schritt: e.target.value })}
+              className="w-full px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+            />
+          </div>
+
+          <div className="pt-4 border-t border-slate-200">
+            <label className="block text-base text-slate-600 mb-2">
+              💡 Optional: Was hast du heute wirklich verstanden?
+            </label>
+            <textarea
+              rows={2}
+              placeholder="Erkläre es in einem Satz, als würdest du es jemandem erklären..."
+              value={form.feynman_satz}
+              onChange={(e) => setForm({ ...form, feynman_satz: e.target.value })}
               className="w-full px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
             />
           </div>
