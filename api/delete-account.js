@@ -22,9 +22,12 @@ export default async function handler(req, res) {
     return
   }
 
+  console.log('URL:', !!process.env.SUPABASE_URL)
+  console.log('Service Key:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+
   try {
     const supabaseAdmin = createClient(
-      process.env.VITE_SUPABASE_URL,
+      process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 

@@ -56,7 +56,7 @@ export default function KiZusammenfassung() {
         </Link>
 
         <div className="flex items-center gap-3 mt-6 mb-8">
-          <img src="/maskottchen.png" alt="Klar" style={{ height: '40px' }} />
+          <img src="/maskottchen.png" alt="Stan, StudyAnker Maskottchen" style={{ height: '40px' }} />
           <h1 className="text-2xl font-semibold text-anker-accent">
             Mein Lernkontext
           </h1>

@@ -282,12 +282,12 @@ export default function Dashboard() {
           <div className="mb-8 text-center">
             <img
               src="/maskottchen.png"
-              alt="Klar"
+              alt="Stan, StudyAnker Maskottchen"
               className="mx-auto mb-4"
               style={{ height: '80px' }}
             />
             <h1 className="text-2xl font-semibold text-anker-accent">
-              Klar ist bereit — setz deinen ersten Anker ⚓
+              Stan ist bereit — setz deinen ersten Anker ⚓
             </h1>
           </div>
         )}

@@ -17,12 +17,12 @@ export default function Onboarding() {
           <>
             <img
               src="/maskottchen.png"
-              alt="Klar"
+              alt="Stan, StudyAnker Maskottchen"
               className="mx-auto mb-8"
               style={{ maxHeight: '180px' }}
             />
             <h1 className="text-2xl font-semibold text-anker-accent mb-3">
-              Hallo! Ich bin Klar, dein Lernbegleiter.
+              Hallo! Ich bin Stan, dein Lernbegleiter.
             </h1>
             <p className="text-lg text-anker-muted mb-10">
               StudyAnker hilft dir, nach jeder Pause sofort weiterzumachen.
