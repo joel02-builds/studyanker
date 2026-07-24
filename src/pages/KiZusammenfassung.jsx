@@ -55,9 +55,12 @@ export default function KiZusammenfassung() {
           ← Zurück
         </Link>
 
-        <h1 className="text-2xl font-semibold text-anker-accent mt-6 mb-8">
-          Mein Lernkontext
-        </h1>
+        <div className="flex items-center gap-3 mt-6 mb-8">
+          <img src="/maskottchen.png" alt="" style={{ height: '40px' }} />
+          <h1 className="text-2xl font-semibold text-anker-accent">
+            Mein Lernkontext
+          </h1>
+        </div>
 
         {(status === 'laden' || status === 'denkt') && (
           <div className="flex flex-col items-center justify-center py-16">

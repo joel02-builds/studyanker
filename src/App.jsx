@@ -4,6 +4,8 @@ import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import AnkerForm from './pages/AnkerForm'
 import KiZusammenfassung from './pages/KiZusammenfassung'
+import Onboarding from './pages/Onboarding'
+import FachVerwaltung from './pages/FachVerwaltung'
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
@@ -15,6 +17,11 @@ function PrivateRoute({ children }) {
   return user ? children : <Navigate to="/login" replace />
 }
 
+function StartRoute() {
+  const onboardingErledigt = localStorage.getItem('onboarding_done') === 'true'
+  return onboardingErledigt ? <Dashboard /> : <Navigate to="/onboarding" replace />
+}
+
 function AppRoutes() {
   return (
     <Routes>
@@ -23,7 +30,15 @@ function AppRoutes() {
         path="/"
         element={
           <PrivateRoute>
-            <Dashboard />
+            <StartRoute />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/onboarding"
+        element={
+          <PrivateRoute>
+            <Onboarding />
           </PrivateRoute>
         }
       />
@@ -32,6 +47,22 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <AnkerForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/anker/bearbeiten/:id"
+        element={
+          <PrivateRoute>
+            <AnkerForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/faecher"
+        element={
+          <PrivateRoute>
+            <FachVerwaltung />
           </PrivateRoute>
         }
       />

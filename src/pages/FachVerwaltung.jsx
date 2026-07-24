@@ -1,0 +1,130 @@
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabaseClient'
+import { useAuth } from '../contexts/AuthContext'
+
+export default function FachVerwaltung() {
+  const { user } = useAuth()
+  const [faecher, setFaecher] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [name, setName] = useState('')
+  const [farbe, setFarbe] = useState('#2D4A6B')
+  const [speichern, setSpeichern] = useState(false)
+  const [error, setError] = useState('')
+
+  async function laden() {
+    const { data, error } = await supabase
+      .from('faecher')
+      .select('*')
+      .order('created_at', { ascending: true })
+
+    if (!error) setFaecher(data)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    laden()
+  }, [])
+
+  async function hinzufuegen(e) {
+    e.preventDefault()
+    if (!name.trim()) return
+
+    setSpeichern(true)
+    setError('')
+
+    const { error } = await supabase.from('faecher').insert({
+      name: name.trim(),
+      farbe,
+      user_id: user.id,
+    })
+
+    setSpeichern(false)
+
+    if (error) {
+      setError(error.message)
+      return
+    }
+
+    setName('')
+    setFarbe('#2D4A6B')
+    laden()
+  }
+
+  async function loeschen(id) {
+    const { error } = await supabase.from('faecher').delete().eq('id', id)
+    if (!error) laden()
+  }
+
+  return (
+    <div className="min-h-screen bg-anker-bg px-6 py-8">
+      <div className="max-w-[500px] mx-auto">
+        <Link to="/" className="text-base text-slate-400 hover:text-slate-600">
+          ← Zurück
+        </Link>
+
+        <h1 className="text-2xl font-semibold text-anker-accent mt-6 mb-8">
+          Deine Fächer
+        </h1>
+
+        <form onSubmit={hinzufuegen} className="bg-white rounded-2xl border border-slate-200 p-5 mb-8 space-y-4">
+          <div className="flex gap-3 items-center">
+            <input
+              type="color"
+              value={farbe}
+              onChange={(e) => setFarbe(e.target.value)}
+              className="w-12 h-12 rounded-lg border border-slate-200 cursor-pointer"
+            />
+            <input
+              type="text"
+              placeholder="Fach hinzufügen"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="flex-1 px-4 py-3 text-base bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+            />
+          </div>
+
+          {error && <p className="text-base text-red-600">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={speichern || !name.trim()}
+            className="w-full bg-anker-accent text-white py-3 rounded-xl text-base font-medium hover:opacity-90 disabled:opacity-50"
+          >
+            {speichern ? 'Speichern...' : 'Fach hinzufügen'}
+          </button>
+        </form>
+
+        {loading ? (
+          <p className="text-slate-500 text-base">Lädt...</p>
+        ) : faecher.length === 0 ? (
+          <p className="text-slate-500 text-base">Noch keine Fächer angelegt.</p>
+        ) : (
+          <div className="space-y-2">
+            {faecher.map((f) => (
+              <div
+                key={f.id}
+                className="flex items-center justify-between bg-white rounded-xl border border-slate-200 px-4 py-3"
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className="w-4 h-4 rounded-full inline-block"
+                    style={{ backgroundColor: f.farbe }}
+                  />
+                  <span className="text-base text-slate-700">{f.name}</span>
+                </div>
+                <button
+                  onClick={() => loeschen(f.id)}
+                  className="text-slate-400 hover:text-red-500 text-lg leading-none px-2"
+                  aria-label={`${f.name} löschen`}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

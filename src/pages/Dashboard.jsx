@@ -1,23 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
 
 const TIMER_STANDARD = 25
 const TIMER_MIN = 1
 const TIMER_MAX = 180
-
-const fachFarben = {
-  Mathe: '#4A90D9',
-  Englisch: '#E8A838',
-  Deutsch: '#D94A4A',
-  Informatik: '#4AD94A',
-  default: '#2D4A6B',
-}
-
-function fachFarbe(fach) {
-  return fachFarben[fach] ?? fachFarben.default
-}
+const DEFAULT_FARBE = '#2D4A6B'
 
 function hexZuRgba(hex, alpha) {
   const r = parseInt(hex.slice(1, 3), 16)
@@ -38,9 +27,13 @@ function formatZeit(sekunden) {
 
 export default function Dashboard() {
   const { signOut } = useAuth()
+  const navigate = useNavigate()
   const [anker, setAnker] = useState([])
   const [ankerAnzahl, setAnkerAnzahl] = useState(0)
+  const [fachFarben, setFachFarben] = useState({})
   const [loading, setLoading] = useState(true)
+  const [offenesMenu, setOffenesMenu] = useState(null)
+  const [loeschenBestaetigen, setLoeschenBestaetigen] = useState(null)
 
   const [timerMinuten, setTimerMinuten] = useState(TIMER_STANDARD)
   const [timerLaeuft, setTimerLaeuft] = useState(false)
@@ -48,23 +41,34 @@ export default function Dashboard() {
   const [verbleibend, setVerbleibend] = useState(TIMER_STANDARD * 60)
   const intervalRef = useRef(null)
 
-  useEffect(() => {
-    async function laden() {
-      const { data, error } = await supabase
-        .from('anker')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(4)
+  function fachFarbe(fach) {
+    return fachFarben[fach] ?? DEFAULT_FARBE
+  }
 
-      if (!error) setAnker(data)
+  async function laden() {
+    const { data, error } = await supabase
+      .from('anker')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(4)
 
-      const { count } = await supabase
-        .from('anker')
-        .select('*', { count: 'exact', head: true })
+    if (!error) setAnker(data)
 
-      setAnkerAnzahl(count ?? 0)
-      setLoading(false)
+    const { count } = await supabase
+      .from('anker')
+      .select('*', { count: 'exact', head: true })
+
+    setAnkerAnzahl(count ?? 0)
+
+    const { data: faecher } = await supabase.from('faecher').select('name, farbe')
+    if (faecher) {
+      setFachFarben(Object.fromEntries(faecher.map((f) => [f.name, f.farbe])))
     }
+
+    setLoading(false)
+  }
+
+  useEffect(() => {
     laden()
   }, [])
 
@@ -94,6 +98,13 @@ export default function Dashboard() {
     clearInterval(intervalRef.current)
     setTimerLaeuft(false)
     setVerbleibend(timerMinuten * 60)
+  }
+
+  async function ankerLoeschen(id) {
+    const { error } = await supabase.from('anker').delete().eq('id', id)
+    setLoeschenBestaetigen(null)
+    setOffenesMenu(null)
+    if (!error) laden()
   }
 
   const letzterAnker = anker[0]
@@ -209,9 +220,17 @@ export default function Dashboard() {
             </div>
           </>
         ) : (
-          <h1 className="text-2xl font-semibold text-anker-accent mb-8">
-            Hallo 👋 — wo warst du zuletzt?
-          </h1>
+          <div className="mb-8 text-center">
+            <img
+              src="/maskottchen.png"
+              alt=""
+              className="mx-auto mb-4"
+              style={{ height: '80px' }}
+            />
+            <h1 className="text-2xl font-semibold text-anker-accent">
+              Noch kein Anker — fang jetzt an
+            </h1>
+          </div>
         )}
 
         <Link
@@ -237,11 +256,59 @@ export default function Dashboard() {
               {weitereAnker.map((a) => (
                 <div
                   key={a.id}
-                  className="flex justify-between items-center bg-white rounded-xl border border-slate-200 px-4 py-3"
+                  className="relative bg-white rounded-xl border border-slate-200 px-4 py-3"
                   style={{ borderLeft: `4px solid ${fachFarbe(a.fach)}` }}
                 >
-                  <span className="text-base text-slate-700">{a.fach}</span>
-                  <span className="text-sm text-slate-400">{formatDatum(a.created_at)}</span>
+                  {loeschenBestaetigen === a.id ? (
+                    <div className="flex items-center justify-between">
+                      <span className="text-base text-slate-700">Wirklich löschen?</span>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => ankerLoeschen(a.id)}
+                          className="text-sm text-red-600 font-medium px-2 py-1 hover:bg-red-50 rounded-lg"
+                        >
+                          Löschen
+                        </button>
+                        <button
+                          onClick={() => setLoeschenBestaetigen(null)}
+                          className="text-sm text-slate-500 px-2 py-1 hover:bg-slate-50 rounded-lg"
+                        >
+                          Abbrechen
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-center">
+                      <span className="text-base text-slate-700">{a.fach}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-slate-400">{formatDatum(a.created_at)}</span>
+                        <button
+                          onClick={() => setOffenesMenu(offenesMenu === a.id ? null : a.id)}
+                          className="text-slate-400 hover:text-slate-600 px-1 text-lg leading-none"
+                          aria-label="Optionen"
+                        >
+                          ···
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {offenesMenu === a.id && loeschenBestaetigen !== a.id && (
+                    <div className="absolute right-4 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-md overflow-hidden z-10">
+                      <button
+                        onClick={() => navigate(`/anker/bearbeiten/${a.id}`)}
+                        className="block w-full text-left px-4 py-2 text-base text-slate-700 hover:bg-slate-50"
+                      >
+                        Bearbeiten
+                      </button>
+                      <button
+                        onClick={() => { setLoeschenBestaetigen(a.id); setOffenesMenu(null) }}
+                        className="block w-full text-left px-4 py-2 text-base text-red-600 hover:bg-red-50"
+                      >
+                        Löschen
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

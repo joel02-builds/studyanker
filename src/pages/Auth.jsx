@@ -9,7 +9,14 @@ export default function Auth() {
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signIn, signUp } = useAuth()
+
+  const [resetOffen, setResetOffen] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
+  const [resetLoading, setResetLoading] = useState(false)
+  const [resetInfo, setResetInfo] = useState('')
+  const [resetError, setResetError] = useState('')
+
+  const { signIn, signUp, resetPassword } = useAuth()
   const navigate = useNavigate()
 
   async function handleSubmit(e) {
@@ -34,6 +41,24 @@ export default function Auth() {
     } else {
       navigate('/')
     }
+  }
+
+  async function handleReset(e) {
+    e.preventDefault()
+    setResetError('')
+    setResetInfo('')
+    setResetLoading(true)
+
+    const { error } = await resetPassword(resetEmail)
+
+    setResetLoading(false)
+
+    if (error) {
+      setResetError(error.message)
+      return
+    }
+
+    setResetInfo('Wir haben dir einen Link geschickt — check deine E-Mails.')
   }
 
   return (
@@ -79,6 +104,42 @@ export default function Auth() {
             {loading ? '...' : mode === 'signin' ? 'Einloggen' : 'Registrieren'}
           </button>
         </form>
+
+        {mode === 'signin' && (
+          <button
+            onClick={() => { setResetOffen(!resetOffen); setResetInfo(''); setResetError('') }}
+            className="mt-4 text-sm text-slate-400 hover:text-slate-600 w-full text-center"
+          >
+            Passwort vergessen?
+          </button>
+        )}
+
+        {resetOffen && (
+          <form onSubmit={handleReset} className="mt-4 p-4 bg-white border border-slate-200 rounded-xl space-y-3">
+            <label className="block text-sm text-slate-600">
+              Wir schicken dir einen Link zum Zurücksetzen.
+            </label>
+            <input
+              type="email"
+              required
+              placeholder="E-Mail"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              className="w-full px-3 py-2 text-base bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+            />
+
+            {resetError && <p className="text-sm text-red-600">{resetError}</p>}
+            {resetInfo && <p className="text-sm text-emerald-700">{resetInfo}</p>}
+
+            <button
+              type="submit"
+              disabled={resetLoading}
+              className="w-full bg-anker-accent text-white py-2 rounded-lg text-base font-medium hover:opacity-90 disabled:opacity-50"
+            >
+              {resetLoading ? '...' : 'Link senden'}
+            </button>
+          </form>
+        )}
 
         <button
           onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setInfo('') }}
