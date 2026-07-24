@@ -1,0 +1,23 @@
+{
+  "name": "StudyAnker",
+  "short_name": "Anker",
+  "description": "Lernbegleiter für den Wiedereinstieg nach Lernpausen",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2D4A6B",
+  "background_color": "#F8F7F4",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
