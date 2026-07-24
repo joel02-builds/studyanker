@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
 
-const TIMER_DAUER = 25 * 60
+const TIMER_STANDARD = 25
+const TIMER_MIN = 1
+const TIMER_MAX = 180
 
 function formatDatum(iso) {
   return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -21,9 +23,10 @@ export default function Dashboard() {
   const [ankerAnzahl, setAnkerAnzahl] = useState(0)
   const [loading, setLoading] = useState(true)
 
+  const [timerMinuten, setTimerMinuten] = useState(TIMER_STANDARD)
   const [timerLaeuft, setTimerLaeuft] = useState(false)
   const [timerFertig, setTimerFertig] = useState(false)
-  const [verbleibend, setVerbleibend] = useState(TIMER_DAUER)
+  const [verbleibend, setVerbleibend] = useState(TIMER_STANDARD * 60)
   const intervalRef = useRef(null)
 
   useEffect(() => {
@@ -51,7 +54,7 @@ export default function Dashboard() {
   }, [])
 
   function timerStarten() {
-    setVerbleibend(TIMER_DAUER)
+    setVerbleibend(timerMinuten * 60)
     setTimerFertig(false)
     setTimerLaeuft(true)
 
@@ -71,7 +74,7 @@ export default function Dashboard() {
   function timerAbbrechen() {
     clearInterval(intervalRef.current)
     setTimerLaeuft(false)
-    setVerbleibend(TIMER_DAUER)
+    setVerbleibend(timerMinuten * 60)
   }
 
   const letzterAnker = anker[0]
@@ -119,7 +122,7 @@ export default function Dashboard() {
             <div className="mb-8">
               {timerFertig ? (
                 <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center">
-                  <p className="text-base text-slate-700 mb-4">25 Minuten geschafft! 🎉 Anker aktualisieren?</p>
+                  <p className="text-base text-slate-700 mb-4">{timerMinuten} Minuten geschafft! 🎉 Anker aktualisieren?</p>
                   <Link
                     to="/anker/neu"
                     className="block w-full text-center bg-anker-accent text-white py-3 rounded-xl text-base font-medium hover:opacity-90"
@@ -140,12 +143,43 @@ export default function Dashboard() {
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={timerStarten}
-                  className="block w-full text-center border border-anker-accent text-anker-accent py-3 rounded-xl text-base font-medium hover:bg-white"
-                >
-                  ⏱ Fokus-Timer starten (25 Min)
-                </button>
+                <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                  <label className="block text-sm text-slate-400 mb-2 text-center">
+                    Wie viele Minuten?
+                  </label>
+                  <div className="flex items-center justify-center gap-3 mb-5">
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={TIMER_MIN}
+                      max={TIMER_MAX}
+                      value={timerMinuten}
+                      onChange={(e) => {
+                        const wert = e.target.value
+                        if (wert === '') {
+                          setTimerMinuten('')
+                          return
+                        }
+                        const zahl = Math.min(TIMER_MAX, Math.max(TIMER_MIN, Number(wert)))
+                        setTimerMinuten(zahl)
+                      }}
+                      onBlur={() => {
+                        if (timerMinuten === '' || Number.isNaN(timerMinuten)) {
+                          setTimerMinuten(TIMER_STANDARD)
+                        }
+                      }}
+                      className="w-28 text-center text-4xl font-semibold text-anker-accent border border-slate-200 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+                    />
+                    <span className="text-lg text-slate-500">Minuten</span>
+                  </div>
+                  <button
+                    onClick={timerStarten}
+                    disabled={timerMinuten === ''}
+                    className="block w-full text-center border border-anker-accent text-anker-accent py-3 rounded-xl text-base font-medium hover:bg-anker-bg disabled:opacity-50"
+                  >
+                    ⏱ Fokus-Timer starten ({timerMinuten || TIMER_STANDARD} Min)
+                  </button>
+                </div>
               )}
             </div>
           </>

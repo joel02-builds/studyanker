@@ -73,7 +73,8 @@ export default function KiZusammenfassung() {
 
         {status === 'fehler' && (
           <div className="bg-white rounded-2xl border border-red-200 p-6">
-            <p className="text-base text-red-600">{fehler}</p>
+            <p className="text-sm text-slate-400 mb-2">Fehlerdetails</p>
+            <p className="text-base text-red-600 break-words whitespace-pre-wrap font-mono">{fehler}</p>
           </div>
         )}
       </div>

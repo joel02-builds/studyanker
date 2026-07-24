@@ -43,6 +43,8 @@ export default async function handler(req, res) {
     return
   }
 
+  console.log('API Key vorhanden:', !!process.env.ANTHROPIC_API_KEY)
+
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
