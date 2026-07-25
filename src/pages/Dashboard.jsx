@@ -30,6 +30,32 @@ const primaryButton = {
   transition: 'all 0.2s ease',
 }
 
+const WOCHENTAGE_KURZ = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
+
+function montagDieserWoche() {
+  const heute = new Date()
+  heute.setHours(0, 0, 0, 0)
+  const versatz = (heute.getDay() + 6) % 7 // 0 = Montag
+  const montag = new Date(heute)
+  montag.setDate(heute.getDate() - versatz)
+  return montag
+}
+
+const STAN_NACHRICHTEN = {
+  morgens: ['Guten Morgen. Wo fängst du heute an?', 'Frischer Start — wo warst du zuletzt?'],
+  mittags: ["Mittagspause? Kurz ankern bevor du weitermachst.", 'Wie läuft\'s heute?'],
+  abends: ['Bevor du aufhörst — setz kurz einen Anker.', 'Guter Moment um festzuhalten wo du warst.'],
+  nacht: ['Spät noch am Lernen? Respect. Kurz ankern.', 'Stan ist auch noch wach.'],
+}
+
+function stanNachricht() {
+  const stunde = new Date().getHours()
+  const zeitraum = stunde < 11 ? 'morgens' : stunde < 17 ? 'mittags' : stunde < 22 ? 'abends' : 'nacht'
+  const nachrichten = STAN_NACHRICHTEN[zeitraum]
+  const wochentag = new Date().getDay()
+  return nachrichten[wochentag % nachrichten.length]
+}
+
 export default function Dashboard() {
   const { signOut } = useAuth()
   const navigate = useNavigate()
@@ -42,6 +68,9 @@ export default function Dashboard() {
   const [loeschenBestaetigen, setLoeschenBestaetigen] = useState(null)
   const [retrievalAntwort, setRetrievalAntwort] = useState('')
   const [reinschauenOffen, setReinschauenOffen] = useState(false)
+  const [wocheKreise, setWocheKreise] = useState([])
+  const [wochenAnkerAnzahl, setWochenAnkerAnzahl] = useState(0)
+  const [stanText, setStanText] = useState('')
 
   const [timerMinuten, setTimerMinuten] = useState(TIMER_STANDARD)
   const [timerLaeuft, setTimerLaeuft] = useState(false)
@@ -71,9 +100,38 @@ export default function Dashboard() {
 
     const { data: faecher } = await supabase.from('faecher').select('name, farbe')
     const bekannteFaecher = new Set()
+    const fachFarbenLokal = {}
     if (faecher) {
-      setFachFarben(Object.fromEntries(faecher.map((f) => [f.name, f.farbe])))
+      Object.assign(fachFarbenLokal, Object.fromEntries(faecher.map((f) => [f.name, f.farbe])))
+      setFachFarben(fachFarbenLokal)
       faecher.forEach((f) => bekannteFaecher.add(f.name))
+    }
+
+    const montag = montagDieserWoche()
+    const { data: wochenAnker } = await supabase
+      .from('anker')
+      .select('fach, created_at')
+      .gte('created_at', montag.toISOString())
+
+    if (wochenAnker) {
+      setWochenAnkerAnzahl(wochenAnker.length)
+
+      const tageMitAnker = new Map()
+      for (const a of wochenAnker) {
+        const key = new Date(a.created_at).toDateString()
+        if (!tageMitAnker.has(key)) {
+          const farbe = a.fach && bekannteFaecher.has(a.fach) ? fachFarbenLokal[a.fach] : null
+          tageMitAnker.set(key, farbe)
+        }
+      }
+
+      const kreise = Array.from({ length: 7 }, (_, i) => {
+        const tag = new Date(montag)
+        tag.setDate(montag.getDate() + i)
+        const key = tag.toDateString()
+        return { gefuellt: tageMitAnker.has(key), farbe: tageMitAnker.get(key) }
+      })
+      setWocheKreise(kreise)
     }
 
     const { data: alleAnker } = await supabase
@@ -104,6 +162,21 @@ export default function Dashboard() {
   useEffect(() => {
     return () => clearInterval(intervalRef.current)
   }, [])
+
+  useEffect(() => {
+    if (loading) return
+    const heute = new Date().toDateString()
+
+    if (anker.length > 0) {
+      const letzte = localStorage.getItem('lastStanMessage')
+      if (letzte !== heute) {
+        setStanText(stanNachricht())
+        localStorage.setItem('lastStanMessage', heute)
+      }
+    } else {
+      setStanText(stanNachricht())
+    }
+  }, [loading, anker.length])
 
   function timerStarten() {
     const sekunden = timerMinuten * 60
@@ -161,10 +234,16 @@ export default function Dashboard() {
           <>
             <h1
               style={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 400, color: 'var(--text-primary)' }}
-              className="mb-6"
+              className={stanText ? 'mb-1' : 'mb-6'}
             >
               Dein letzter Anker
             </h1>
+
+            {stanText && (
+              <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                {stanText}
+              </p>
+            )}
             <div
               className="bg-anker-card rounded-anker shadow-anker p-6 mb-4 space-y-4"
               style={{
@@ -199,6 +278,34 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
+
+            {wocheKreise.length > 0 && (
+              <div className="mb-6 text-center">
+                <div className="flex justify-center gap-2 mb-2">
+                  {wocheKreise.map((tag, i) => (
+                    <div key={i} className="flex flex-col items-center gap-1">
+                      <div
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '50%',
+                          border: '2px solid var(--border)',
+                          background: tag.gefuellt ? (tag.farbe ?? 'var(--accent-secondary)') : 'transparent',
+                        }}
+                      />
+                      <span className="text-xs text-anker-faint">{WOCHENTAGE_KURZ[i]}</span>
+                    </div>
+                  ))}
+                </div>
+                {wochenAnkerAnzahl > 0 && (
+                  <p className="text-sm text-anker-faint">
+                    {wocheKreise.every((t) => t.gefuellt)
+                      ? 'Starke Woche. ⚓'
+                      : `Diese Woche: ${wochenAnkerAnzahl} Anker ⚓`}
+                  </p>
+                )}
+              </div>
+            )}
 
             {letzterAnker.feynman_satz && !timerLaeuft && !timerFertig && (
               <div
@@ -242,6 +349,32 @@ export default function Dashboard() {
                   )
                 })}
               </div>
+            )}
+
+            {ankerAnzahl >= 3 ? (
+              <div
+                onClick={() => navigate('/zusammenfassung')}
+                style={{
+                  background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
+                  borderRadius: 'var(--radius)',
+                  padding: '1rem 1.25rem',
+                  cursor: 'pointer',
+                  color: 'white',
+                }}
+                className="mb-4"
+              >
+                <div style={{ fontSize: '0.75rem', opacity: 0.8, marginBottom: '4px' }}>KI-ZUSAMMENFASSUNG</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontSize: '1.1rem' }}>
+                  ✨ Mein Lernkontext — was hat Stan für dich?
+                </div>
+              </div>
+            ) : (
+              <Link
+                to="/zusammenfassung"
+                className="block w-full text-center text-anker-accent py-3 text-base font-medium hover:opacity-80 mb-4"
+              >
+                🧠 Mein Lernkontext
+              </Link>
             )}
 
             <button
@@ -417,6 +550,11 @@ export default function Dashboard() {
               >
                 Stan ist bereit — setz deinen ersten Anker ⚓
               </h1>
+              {stanText && (
+                <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                  {stanText}
+                </p>
+              )}
             </div>
 
             <Link
@@ -427,15 +565,6 @@ export default function Dashboard() {
               Neuen Anker setzen
             </Link>
           </>
-        )}
-
-        {ankerAnzahl >= 3 && (
-          <Link
-            to="/zusammenfassung"
-            className="block w-full text-center text-anker-accent py-3 text-base font-medium hover:opacity-80 mb-10"
-          >
-            🧠 Mein Lernkontext
-          </Link>
         )}
 
         {weitereAnker.length > 0 && (

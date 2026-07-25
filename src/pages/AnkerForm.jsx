@@ -235,20 +235,30 @@ export default function AnkerForm() {
 
           {error && <p className="text-base text-red-600">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90 disabled:opacity-50"
-            style={{ padding: '1rem 2rem', transition: 'all 0.2s ease' }}
+          <div
+            style={{
+              position: 'sticky',
+              bottom: 0,
+              background: 'var(--bg)',
+              padding: '1rem 0 1.5rem',
+              marginTop: '1rem',
+            }}
           >
-            {saving
-              ? 'Speichern...'
-              : bearbeitenModus
-                ? 'Änderungen speichern'
-                : nurKurzAnkern
-                  ? 'Kurz ankern ⚓'
-                  : 'Anker setzen ⚓'}
-          </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="w-full bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90 disabled:opacity-50"
+              style={{ padding: '1rem 2rem', transition: 'all 0.2s ease' }}
+            >
+              {saving
+                ? 'Speichern...'
+                : bearbeitenModus
+                  ? 'Änderungen speichern'
+                  : nurKurzAnkern
+                    ? 'Kurz ankern ⚓'
+                    : 'Anker setzen ⚓'}
+            </button>
+          </div>
         </form>
       </div>
     </div>

@@ -1,8 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../useTheme'
+
+function sendeReminderAnServiceWorker(zeit) {
+  navigator.serviceWorker?.ready.then((reg) => {
+    reg.active?.postMessage({ type: 'SCHEDULE_REMINDER', time: zeit })
+  })
+}
 
 export default function Einstellungen() {
   const { theme, toggleTheme } = useTheme()
@@ -10,6 +16,50 @@ export default function Einstellungen() {
   const [loeschenBestaetigen, setLoeschenBestaetigen] = useState(false)
   const [loeschenLaeuft, setLoeschenLaeuft] = useState(false)
   const [error, setError] = useState('')
+
+  const [erinnerungZeit, setErinnerungZeit] = useState(() => localStorage.getItem('erinnerung_zeit') || '18:00')
+  const [erinnerungAktiv, setErinnerungAktiv] = useState(() => localStorage.getItem('erinnerung_aktiv') === 'true')
+  const [erinnerungInfo, setErinnerungInfo] = useState('')
+
+  useEffect(() => {
+    if (erinnerungAktiv && 'Notification' in window && Notification.permission === 'granted') {
+      sendeReminderAnServiceWorker(erinnerungZeit)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  async function erinnerungToggeln() {
+    setErinnerungInfo('')
+
+    if (erinnerungAktiv) {
+      setErinnerungAktiv(false)
+      localStorage.setItem('erinnerung_aktiv', 'false')
+      navigator.serviceWorker?.ready.then((reg) => reg.active?.postMessage({ type: 'CANCEL_REMINDER' }))
+      return
+    }
+
+    if (!('Notification' in window)) {
+      setErinnerungInfo('Kein Problem — du kannst jederzeit manuell vorbeikommen.')
+      return
+    }
+
+    const permission = await Notification.requestPermission()
+
+    if (permission !== 'granted') {
+      setErinnerungInfo('Kein Problem — du kannst jederzeit manuell vorbeikommen.')
+      return
+    }
+
+    setErinnerungAktiv(true)
+    localStorage.setItem('erinnerung_aktiv', 'true')
+    sendeReminderAnServiceWorker(erinnerungZeit)
+  }
+
+  function zeitAendern(neueZeit) {
+    setErinnerungZeit(neueZeit)
+    localStorage.setItem('erinnerung_zeit', neueZeit)
+    if (erinnerungAktiv) sendeReminderAnServiceWorker(neueZeit)
+  }
 
   async function accountLoeschen() {
     setLoeschenLaeuft(true)
@@ -61,6 +111,38 @@ export default function Einstellungen() {
               />
             </button>
           </div>
+        </div>
+
+        <div className="bg-anker-card rounded-anker shadow-anker p-6 mb-6 space-y-4">
+          <div>
+            <p className="text-base font-medium text-anker-text">Erinnerung</p>
+            <p className="text-sm text-anker-muted">Wann lernst du normalerweise?</p>
+          </div>
+
+          <input
+            type="time"
+            value={erinnerungZeit}
+            onChange={(e) => zeitAendern(e.target.value)}
+            className="px-3 py-2 text-base bg-anker-bg border border-anker-border rounded-anker-sm focus:outline-none focus:ring-2 focus:ring-anker-accent2/30 focus:border-anker-accent2"
+          />
+
+          <div className="flex items-center justify-between">
+            <p className="text-base text-anker-text">Erinnere mich täglich</p>
+            <button
+              onClick={erinnerungToggeln}
+              role="switch"
+              aria-checked={erinnerungAktiv}
+              className="relative w-14 h-8 rounded-full transition-colors"
+              style={{ backgroundColor: erinnerungAktiv ? 'var(--accent-primary)' : 'var(--border)' }}
+            >
+              <span
+                className="absolute top-1 w-6 h-6 rounded-full bg-white transition-transform"
+                style={{ transform: erinnerungAktiv ? 'translateX(1.75rem)' : 'translateX(0.25rem)' }}
+              />
+            </button>
+          </div>
+
+          {erinnerungInfo && <p className="text-sm text-anker-muted">{erinnerungInfo}</p>}
         </div>
 
         <Link
