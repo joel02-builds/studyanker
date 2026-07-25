@@ -15,6 +15,26 @@ export default function Onboarding() {
       <div className="w-full max-w-[400px] text-center">
         {schritt === 1 && (
           <>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ color: 'var(--accent-secondary)', marginRight: '8px', verticalAlign: 'middle' }}
+              >
+                <circle cx="12" cy="5" r="2" />
+                <path d="M12 7v14" />
+                <path d="M5 14H2a10 10 0 0 0 20 0h-3" />
+              </svg>
+              <span style={{ fontFamily: 'Fraunces, serif', fontSize: '1.5rem', fontWeight: 400, color: 'var(--accent-primary)' }}>
+                StudyAnker
+              </span>
+            </div>
             <img
               src="/maskottchen.png"
               alt="Stan, StudyAnker Maskottchen"
