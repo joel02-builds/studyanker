@@ -27,7 +27,7 @@ function BestaetigungsAnsicht() {
   )
 }
 
-function SprachFeld({ label, placeholder, value, onChange, rows = 2 }) {
+function SprachFeld({ label, placeholder, value, onChange, rows = 2, required = false }) {
   const { isListening, startListening, stopListening, supported } = useSpeechInput((text) => {
     onChange(value ? `${value} ${text}` : text)
   })
@@ -38,6 +38,7 @@ function SprachFeld({ label, placeholder, value, onChange, rows = 2 }) {
       <div className="relative">
         <textarea
           rows={rows}
+          required={required}
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -138,6 +139,12 @@ export default function AnkerForm() {
     return <BestaetigungsAnsicht />
   }
 
+  const nurKurzAnkern =
+    form.wo_war_ich.trim() !== '' &&
+    !form.was_war_wichtig.trim() &&
+    !form.naechster_schritt.trim() &&
+    !form.feynman_satz.trim()
+
   if (ladenAnker) {
     return (
       <div className="min-h-screen bg-anker-bg flex items-center justify-center">
@@ -162,14 +169,13 @@ export default function AnkerForm() {
             <label className="block text-base text-anker-muted mb-2">Welches Fach?</label>
             <div className="flex gap-3">
               <select
-                required
                 value={form.fach}
                 onChange={(e) => setForm({ ...form, fach: e.target.value })}
                 disabled={ladenFaecher}
                 className="flex-1 px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
               >
-                <option value="" disabled>
-                  {ladenFaecher ? 'Lädt...' : faecher.length === 0 ? 'Noch keine Fächer' : 'Fach auswählen oder neu anlegen...'}
+                <option value="">
+                  {ladenFaecher ? 'Lädt...' : 'Kein Fach — einfach loslegen'}
                 </option>
                 {faecher.map((f) => (
                   <option key={f.id} value={f.name}>
@@ -192,17 +198,18 @@ export default function AnkerForm() {
             placeholder="z.B. Kapitel 4, Seite 67 — Photosynthese"
             value={form.wo_war_ich}
             onChange={(text) => setForm((f) => ({ ...f, wo_war_ich: text }))}
+            required
           />
 
           <SprachFeld
-            label="Was solltest du nicht vergessen?"
+            label="Was solltest du nicht vergessen? (optional)"
             placeholder="z.B. Der Unterschied zwischen X und Y war mir neu"
             value={form.was_war_wichtig}
             onChange={(text) => setForm((f) => ({ ...f, was_war_wichtig: text }))}
           />
 
           <SprachFeld
-            label="Was ist dein erster Schritt beim nächsten Mal?"
+            label="Was ist dein erster Schritt beim nächsten Mal? (optional)"
             placeholder="z.B. Aufgaben 3-5 auf Seite 71 lösen"
             value={form.naechster_schritt}
             onChange={(text) => setForm((f) => ({ ...f, naechster_schritt: text }))}
@@ -224,7 +231,13 @@ export default function AnkerForm() {
             disabled={saving}
             className="w-full bg-anker-accent text-white py-4 rounded-xl text-base font-medium hover:opacity-90 disabled:opacity-50"
           >
-            {saving ? 'Speichern...' : bearbeitenModus ? 'Änderungen speichern' : 'Anker setzen ⚓'}
+            {saving
+              ? 'Speichern...'
+              : bearbeitenModus
+                ? 'Änderungen speichern'
+                : nurKurzAnkern
+                  ? 'Kurz ankern ⚓'
+                  : 'Anker setzen ⚓'}
           </button>
         </form>
       </div>

@@ -8,6 +8,8 @@ const TIMER_STANDARD = 25
 const TIMER_MIN = 1
 const TIMER_MAX = 180
 const DEFAULT_FARBE = '#2D4A6B'
+const RING_RADIUS = 60
+const RING_UMFANG = 2 * Math.PI * RING_RADIUS
 
 function hexZuRgba(hex, alpha) {
   const r = parseInt(hex.slice(1, 3), 16)
@@ -33,11 +35,13 @@ export default function Dashboard() {
   const [offenesMenu, setOffenesMenu] = useState(null)
   const [loeschenBestaetigen, setLoeschenBestaetigen] = useState(null)
   const [retrievalAntwort, setRetrievalAntwort] = useState('')
+  const [reinschauenOffen, setReinschauenOffen] = useState(false)
 
   const [timerMinuten, setTimerMinuten] = useState(TIMER_STANDARD)
   const [timerLaeuft, setTimerLaeuft] = useState(false)
   const [timerFertig, setTimerFertig] = useState(false)
   const [verbleibend, setVerbleibend] = useState(TIMER_STANDARD * 60)
+  const [gesamtSekunden, setGesamtSekunden] = useState(TIMER_STANDARD * 60)
   const intervalRef = useRef(null)
 
   function fachFarbe(fach) {
@@ -94,7 +98,9 @@ export default function Dashboard() {
   }, [])
 
   function timerStarten() {
-    setVerbleibend(timerMinuten * 60)
+    const sekunden = timerMinuten * 60
+    setVerbleibend(sekunden)
+    setGesamtSekunden(sekunden)
     setTimerFertig(false)
     setTimerLaeuft(true)
 
@@ -126,6 +132,8 @@ export default function Dashboard() {
 
   const letzterAnker = anker[0]
   const weitereAnker = anker.slice(1, 4).filter((a) => a.fach && a.fach.trim() !== '')
+  const ringFortschritt = gesamtSekunden > 0 ? verbleibend / gesamtSekunden : 0
+  const ringOffset = RING_UMFANG * (1 - ringFortschritt)
 
   return (
     <div className="min-h-screen bg-anker-bg px-6 py-8">
@@ -191,10 +199,9 @@ export default function Dashboard() {
             )}
 
             {letzterKontakt.length > 0 && (
-              <div className="mb-4 space-y-1.5">
+              <div className="mb-6 flex flex-wrap gap-x-4 gap-y-1.5">
                 {letzterKontakt.map((k) => {
-                  const tage = tageSeit(k.created_at)
-                  const gedimmt = tage > 5
+                  const gedimmt = tageSeit(k.created_at) > 5
                   return (
                     <div
                       key={k.fach}
@@ -205,44 +212,119 @@ export default function Dashboard() {
                         className="w-2 h-2 rounded-full inline-block"
                         style={{ backgroundColor: fachFarbe(k.fach) }}
                       />
-                      <span className="text-anker-muted">
-                        {k.fach} — zuletzt {formatDatum(k.created_at).toLowerCase()}
-                      </span>
+                      <span className="text-anker-muted">{k.fach}</span>
                     </div>
                   )
                 })}
               </div>
             )}
 
+            <button
+              onClick={() => setReinschauenOffen(!reinschauenOffen)}
+              className="block w-full text-center text-sm text-anker-muted hover:text-anker-text py-2 mb-2"
+            >
+              👁 Kurz reinschauen
+            </button>
+
+            {reinschauenOffen && (
+              <div
+                className="bg-anker-card rounded-2xl border border-anker-border p-5 mb-4 space-y-3"
+                style={{
+                  borderLeft: `4px solid ${fachFarbe(letzterAnker.fach)}`,
+                  backgroundColor: hexZuRgba(fachFarbe(letzterAnker.fach), 0.1),
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-3 h-3 rounded-full inline-block"
+                    style={{ backgroundColor: fachFarbe(letzterAnker.fach) }}
+                  />
+                  <span className="font-semibold text-anker-text">{letzterAnker.fach || 'Ohne Fach'}</span>
+                </div>
+                {letzterAnker.wo_war_ich && (
+                  <p className="text-base text-anker-text">{letzterAnker.wo_war_ich}</p>
+                )}
+                {letzterAnker.naechster_schritt && (
+                  <p className="text-base font-semibold text-anker-text">→ {letzterAnker.naechster_schritt}</p>
+                )}
+                <button
+                  onClick={() => setReinschauenOffen(false)}
+                  className="w-full text-center bg-anker-accent text-white py-2 rounded-xl text-base font-medium hover:opacity-90"
+                >
+                  Alles klar, weiter ✓
+                </button>
+              </div>
+            )}
+
+            <Link
+              to="/anker/neu"
+              className="block w-full text-center bg-anker-accent text-white py-4 rounded-xl text-base font-medium hover:opacity-90 mb-6"
+            >
+              Neuen Anker setzen
+            </Link>
+
             <div className="mb-8">
               {timerFertig ? (
-                <div className="bg-anker-card rounded-2xl border border-anker-border p-6 text-center">
-                  <p className="text-base text-anker-text mb-4">{timerMinuten} Minuten geschafft! 🎉 Anker aktualisieren?</p>
+                <div className="bg-anker-card rounded-xl border border-anker-border p-5 text-center space-y-3">
+                  <p className="text-base text-anker-text mb-1">{timerMinuten} Minuten geschafft! 🎉</p>
                   <Link
                     to="/anker/neu"
                     className="block w-full text-center bg-anker-accent text-white py-3 rounded-xl text-base font-medium hover:opacity-90"
                   >
-                    Anker aktualisieren
+                    Anker aktualisieren ⚓
                   </Link>
+                  <button
+                    onClick={timerStarten}
+                    className="block w-full text-center border border-anker-border text-anker-text py-3 rounded-xl text-base font-medium hover:bg-anker-bg"
+                  >
+                    Weiterlaufen — ich bin im Flow 🌊
+                  </button>
                 </div>
               ) : timerLaeuft ? (
-                <div className="bg-anker-card rounded-2xl border border-anker-border p-6 text-center">
-                  <p className="text-4xl font-semibold text-anker-accent tracking-wide mb-4">
-                    {formatZeit(verbleibend)}
-                  </p>
+                <div className="bg-anker-card rounded-xl border border-anker-border p-5 text-center">
+                  <div className="relative mx-auto mb-4" style={{ width: 140, height: 140 }}>
+                    <svg width="140" height="140" viewBox="0 0 140 140">
+                      <circle
+                        cx="70"
+                        cy="70"
+                        r={RING_RADIUS}
+                        fill="none"
+                        stroke="var(--color-border)"
+                        strokeWidth="8"
+                      />
+                      <circle
+                        cx="70"
+                        cy="70"
+                        r={RING_RADIUS}
+                        fill="none"
+                        stroke="var(--color-accent)"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeDasharray={RING_UMFANG}
+                        strokeDashoffset={ringOffset}
+                        transform="rotate(-90 70 70)"
+                        style={{ transition: 'stroke-dashoffset 1s linear' }}
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-2xl font-semibold text-anker-accent tracking-wide">
+                        {formatZeit(verbleibend)}
+                      </span>
+                    </div>
+                  </div>
                   <button
                     onClick={timerAbbrechen}
-                    className="w-full text-center border border-anker-border text-anker-text py-3 rounded-xl text-base font-medium hover:bg-anker-bg"
+                    className="w-full text-center border border-anker-border text-anker-text py-2 rounded-xl text-sm font-medium hover:bg-anker-bg"
                   >
                     Timer läuft... (abbrechen)
                   </button>
                 </div>
               ) : (
-                <div className="bg-anker-card rounded-2xl border border-anker-border p-6">
+                <div className="bg-anker-card rounded-xl border border-anker-border p-4">
                   <label className="block text-sm text-anker-muted mb-2 text-center">
                     Wie viele Minuten?
                   </label>
-                  <div className="flex items-center justify-center gap-3 mb-5">
+                  <div className="flex items-center justify-center gap-3 mb-4">
                     <input
                       type="number"
                       inputMode="numeric"
@@ -263,14 +345,14 @@ export default function Dashboard() {
                           setTimerMinuten(TIMER_STANDARD)
                         }
                       }}
-                      className="w-28 text-center text-4xl font-semibold text-anker-accent border border-anker-border rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+                      className="w-20 text-center text-xl font-semibold text-anker-accent border border-anker-border rounded-xl py-2 focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
                     />
-                    <span className="text-lg text-anker-muted">Minuten</span>
+                    <span className="text-base text-anker-muted">Minuten</span>
                   </div>
                   <button
                     onClick={timerStarten}
                     disabled={timerMinuten === ''}
-                    className="block w-full text-center border border-anker-accent text-anker-accent py-3 rounded-xl text-base font-medium hover:bg-anker-bg disabled:opacity-50"
+                    className="block w-full text-center border border-anker-accent text-anker-accent py-2 rounded-xl text-sm font-medium hover:bg-anker-bg disabled:opacity-50"
                   >
                     ⏱ Fokus-Timer starten ({timerMinuten || TIMER_STANDARD} Min)
                   </button>
@@ -279,25 +361,27 @@ export default function Dashboard() {
             </div>
           </>
         ) : (
-          <div className="mb-8 text-center">
-            <img
-              src="/maskottchen.png"
-              alt="Stan, StudyAnker Maskottchen"
-              className="mx-auto mb-4"
-              style={{ height: '80px' }}
-            />
-            <h1 className="text-2xl font-semibold text-anker-accent">
-              Stan ist bereit — setz deinen ersten Anker ⚓
-            </h1>
-          </div>
-        )}
+          <>
+            <div className="mb-8 text-center">
+              <img
+                src="/maskottchen.png"
+                alt="Stan, StudyAnker Maskottchen"
+                className="mx-auto mb-4"
+                style={{ height: '80px' }}
+              />
+              <h1 className="text-2xl font-semibold text-anker-accent">
+                Stan ist bereit — setz deinen ersten Anker ⚓
+              </h1>
+            </div>
 
-        <Link
-          to="/anker/neu"
-          className="block w-full text-center bg-anker-accent text-white py-4 rounded-xl text-base font-medium hover:opacity-90 mb-4"
-        >
-          Neuen Anker setzen
-        </Link>
+            <Link
+              to="/anker/neu"
+              className="block w-full text-center bg-anker-accent text-white py-4 rounded-xl text-base font-medium hover:opacity-90 mb-6"
+            >
+              Neuen Anker setzen
+            </Link>
+          </>
+        )}
 
         {ankerAnzahl >= 3 && (
           <Link
@@ -310,7 +394,7 @@ export default function Dashboard() {
 
         {weitereAnker.length > 0 && (
           <div>
-            <p className="text-sm text-anker-muted mb-3">Zuletzt</p>
+            <p className="text-sm text-anker-muted mb-3">Deine Anker</p>
             <div className="space-y-2">
               {weitereAnker.map((a) => (
                 <div
