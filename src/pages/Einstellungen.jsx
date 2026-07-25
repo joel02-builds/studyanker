@@ -28,7 +28,7 @@ export default function Einstellungen() {
         throw new Error(data.error ?? `Serverfehler (${response.status})`)
       }
 
-      await signOut()
+      await signOut().catch(() => {})
       navigate('/login')
     } catch (e) {
       setError(e.message)
