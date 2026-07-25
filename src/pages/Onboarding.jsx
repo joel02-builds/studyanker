@@ -1,13 +1,36 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTheme } from '../useTheme'
+import StudyAnkerLogo from '../components/StudyAnkerLogo'
 
 export default function Onboarding() {
   const [schritt, setSchritt] = useState(1)
+  const [erinnerungZeit, setErinnerungZeit] = useState('18:00')
   const navigate = useNavigate()
+  const { theme } = useTheme()
+  const isDarkMode = theme === 'dark'
 
   function abschliessenUndWeiter() {
     localStorage.setItem('onboarding_done', 'true')
     navigate('/anker/neu')
+  }
+
+  async function handleReminderSetzen() {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission()
+      if (permission === 'granted') {
+        localStorage.setItem('erinnerung_zeit', erinnerungZeit)
+        localStorage.setItem('erinnerung_aktiv', 'true')
+        navigator.serviceWorker?.ready.then((reg) => {
+          reg.active?.postMessage({ type: 'SCHEDULE_REMINDER', time: erinnerungZeit })
+        })
+      }
+    }
+    setSchritt(4)
+  }
+
+  function handleReminderSkip() {
+    setSchritt(4)
   }
 
   return (
@@ -15,19 +38,9 @@ export default function Onboarding() {
       <div className="w-full max-w-[400px] text-center">
         {schritt === 1 && (
           <>
-            <img
-              src="/logo.png"
-              alt="StudyAnker"
-              style={{
-                width: '48px',
-                height: '48px',
-                objectFit: 'contain',
-                background: 'transparent',
-                mixBlendMode: 'multiply',
-                display: 'block',
-                margin: '0 auto 8px auto',
-              }}
-            />
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+              <StudyAnkerLogo size={48} color={isDarkMode ? '#4E8098' : '#1C3A52'} />
+            </div>
             <img
               src="/maskottchen.png"
               alt="Stan, StudyAnker Maskottchen"
@@ -81,6 +94,57 @@ export default function Onboarding() {
         )}
 
         {schritt === 3 && (
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <p style={{ fontSize: '1.5rem', fontFamily: 'Fraunces, serif', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
+              Wann lernst du normalerweise?
+            </p>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', fontSize: '0.95rem' }}>
+              Stan erinnert dich dann kurz — kein Druck, nur ein sanfter Impuls.
+            </p>
+
+            <input
+              type="time"
+              value={erinnerungZeit}
+              onChange={(e) => setErinnerungZeit(e.target.value)}
+              style={{
+                fontSize: '2rem',
+                border: 'none',
+                background: 'var(--bg-subtle)',
+                borderRadius: 'var(--radius)',
+                padding: '0.75rem 1.5rem',
+                color: 'var(--accent-primary)',
+                fontFamily: 'Fraunces, serif',
+                display: 'block',
+                margin: '0 auto 1.5rem auto',
+              }}
+            />
+
+            <button
+              onClick={handleReminderSetzen}
+              className="w-full bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90"
+              style={{ padding: '1rem 2rem', transition: 'all 0.2s ease' }}
+            >
+              Erinnere mich täglich ⚓
+            </button>
+
+            <button
+              onClick={handleReminderSkip}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-muted)',
+                marginTop: '1rem',
+                cursor: 'pointer',
+                display: 'block',
+                margin: '1rem auto 0',
+              }}
+            >
+              Lieber nicht — ich komme selbst
+            </button>
+          </div>
+        )}
+
+        {schritt === 4 && (
           <>
             <h1
               style={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 400, color: 'var(--text-primary)' }}

@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../useTheme'
+import StudyAnkerLogo from '../components/StudyAnkerLogo'
 
 export default function Auth() {
+  const { theme } = useTheme()
+  const isDarkMode = theme === 'dark'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [mode, setMode] = useState('signin') // 'signin' | 'signup'
@@ -65,19 +69,9 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-anker-bg px-6">
       <div className="w-full max-w-[400px]">
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <img
-            src="/logo.png"
-            alt="StudyAnker Logo"
-            style={{
-              width: '80px',
-              height: '80px',
-              objectFit: 'contain',
-              background: 'transparent',
-              mixBlendMode: 'multiply',
-              display: 'block',
-              margin: '0 auto 1rem auto',
-            }}
-          />
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+            <StudyAnkerLogo size={80} color={isDarkMode ? '#4E8098' : '#1C3A52'} />
+          </div>
           <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: '2rem', color: 'var(--accent-primary)', margin: 0 }}>
             StudyAnker
           </h1>
