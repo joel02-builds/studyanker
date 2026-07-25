@@ -178,7 +178,7 @@ export default function AnkerForm() {
                 ))}
               </select>
               <Link
-                to="/faecher"
+                to="/faecher?from=anker"
                 className="w-12 flex items-center justify-center text-xl bg-anker-card border border-anker-border rounded-xl text-anker-accent hover:bg-anker-bg"
                 aria-label="Fach hinzufügen"
               >

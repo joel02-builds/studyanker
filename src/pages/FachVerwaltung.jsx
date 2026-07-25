@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function FachVerwaltung() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [faecher, setFaecher] = useState([])
   const [loading, setLoading] = useState(true)
   const [name, setName] = useState('')
@@ -48,6 +49,13 @@ export default function FachVerwaltung() {
 
     setName('')
     setFarbe('#2D4A6B')
+
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('from') === 'anker') {
+      navigate('/anker/neu')
+      return
+    }
+
     laden()
   }
 
