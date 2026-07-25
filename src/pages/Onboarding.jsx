@@ -21,7 +21,10 @@ export default function Onboarding() {
               className="mx-auto mb-8"
               style={{ maxHeight: '180px' }}
             />
-            <h1 className="text-2xl font-semibold text-anker-accent mb-3">
+            <h1
+              style={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 400, color: 'var(--text-primary)' }}
+              className="mb-3"
+            >
               Hallo! Ich bin Stan, dein Lernbegleiter.
             </h1>
             <p className="text-lg text-anker-muted mb-10">
@@ -29,7 +32,8 @@ export default function Onboarding() {
             </p>
             <button
               onClick={() => setSchritt(2)}
-              className="w-full bg-anker-accent text-white py-3 rounded-xl text-base font-medium hover:opacity-90"
+              className="w-full bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90"
+              style={{ padding: '1rem 2rem', transition: 'all 0.2s ease' }}
             >
               Wie funktioniert das?
             </button>
@@ -39,7 +43,7 @@ export default function Onboarding() {
         {schritt === 2 && (
           <>
             <div className="mb-10 space-y-4">
-              <div className="bg-anker-card border border-anker-border rounded-2xl p-5 text-left">
+              <div className="bg-anker-card rounded-anker shadow-anker p-5 text-left">
                 <p className="text-sm text-anker-muted mb-1">Vor dem Aufhören</p>
                 <p className="text-lg text-anker-text">Anker setzen (30 Sekunden)</p>
               </div>
@@ -48,14 +52,15 @@ export default function Onboarding() {
                 <div className="w-px h-8 bg-anker-border" />
               </div>
 
-              <div className="bg-anker-card border border-anker-border rounded-2xl p-5 text-left">
+              <div className="bg-anker-card rounded-anker shadow-anker p-5 text-left">
                 <p className="text-sm text-anker-muted mb-1">Beim Weitermachen</p>
                 <p className="text-lg text-anker-text">Anker lesen → sofort wissen wo du warst</p>
               </div>
             </div>
             <button
               onClick={() => setSchritt(3)}
-              className="w-full bg-anker-accent text-white py-3 rounded-xl text-base font-medium hover:opacity-90"
+              className="w-full bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90"
+              style={{ padding: '1rem 2rem', transition: 'all 0.2s ease' }}
             >
               Verstanden — los geht's
             </button>
@@ -64,12 +69,16 @@ export default function Onboarding() {
 
         {schritt === 3 && (
           <>
-            <h1 className="text-2xl font-semibold text-anker-accent mb-10">
+            <h1
+              style={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 400, color: 'var(--text-primary)' }}
+              className="mb-10"
+            >
               Setz gleich deinen ersten Anker. Was lernst du gerade?
             </h1>
             <button
               onClick={abschliessenUndWeiter}
-              className="w-full bg-anker-accent text-white py-3 rounded-xl text-base font-medium hover:opacity-90"
+              className="w-full bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90"
+              style={{ padding: '1rem 2rem', transition: 'all 0.2s ease' }}
             >
               Ersten Anker setzen →
             </button>

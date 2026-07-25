@@ -7,21 +7,27 @@ import { useSpeechInput } from '../useSpeechInput'
 const LEER = { fach: '', wo_war_ich: '', was_war_wichtig: '', naechster_schritt: '', feynman_satz: '' }
 
 function BestaetigungsAnsicht() {
-  const [sichtbar, setSichtbar] = useState(false)
-
-  useEffect(() => {
-    const t = setTimeout(() => setSichtbar(true), 10)
-    return () => clearTimeout(t)
-  }, [])
-
   return (
     <div className="min-h-screen bg-anker-bg flex items-center justify-center">
-      <div
-        className="text-center"
-        style={{ opacity: sichtbar ? 1 : 0, transition: 'opacity 0.4s ease' }}
-      >
-        <p className="text-6xl mb-4">⚓</p>
-        <p className="text-xl font-semibold text-anker-accent">Anker gesetzt.</p>
+      <div style={{ textAlign: 'center', padding: '3rem' }}>
+        <div
+          style={{
+            fontSize: '4rem',
+            animation: 'anchorDrop 0.8s ease-out forwards',
+          }}
+        >
+          ⚓
+        </div>
+        <p
+          style={{
+            fontFamily: 'Fraunces, serif',
+            fontSize: '1.5rem',
+            marginTop: '1rem',
+            color: 'var(--accent-primary)',
+          }}
+        >
+          Anker gesetzt.
+        </p>
       </div>
     </div>
   )
@@ -42,13 +48,13 @@ function SprachFeld({ label, placeholder, value, onChange, rows = 2, required = 
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`w-full px-4 py-3 ${supported ? 'pr-12' : ''} text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent`}
+          className={`w-full px-4 py-3 ${supported ? 'pr-12' : ''} text-base bg-anker-card border border-anker-border rounded-anker-sm focus:outline-none focus:ring-2 focus:ring-anker-accent2/40 focus:border-anker-accent2`}
         />
         {supported && (
           <button
             type="button"
             onClick={() => (isListening ? stopListening() : startListening())}
-            className={`absolute top-3 right-3 text-lg leading-none ${isListening ? 'animate-pulse text-red-500' : 'text-anker-muted hover:text-anker-accent'}`}
+            className={`absolute top-3 right-3 text-lg leading-none ${isListening ? 'animate-pulse text-red-500' : 'text-anker-muted hover:text-anker-accent2'}`}
             aria-label={isListening ? 'Aufnahme stoppen' : 'Spracheingabe starten'}
           >
             🎤
@@ -160,7 +166,10 @@ export default function AnkerForm() {
           ← Zurück
         </Link>
 
-        <h1 className="text-2xl font-semibold text-anker-accent mt-6 mb-8">
+        <h1
+          style={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 400, color: 'var(--text-primary)' }}
+          className="mt-6 mb-8"
+        >
           {bearbeitenModus ? 'Anker bearbeiten' : 'Anker setzen — wo bist du gerade?'}
         </h1>
 
@@ -172,7 +181,7 @@ export default function AnkerForm() {
                 value={form.fach}
                 onChange={(e) => setForm({ ...form, fach: e.target.value })}
                 disabled={ladenFaecher}
-                className="flex-1 px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+                className="flex-1 px-4 py-3 text-base bg-anker-card border border-anker-border rounded-anker-sm focus:outline-none focus:ring-2 focus:ring-anker-accent2/40 focus:border-anker-accent2"
               >
                 <option value="">
                   {ladenFaecher ? 'Lädt...' : 'Kein Fach — einfach loslegen'}
@@ -185,7 +194,7 @@ export default function AnkerForm() {
               </select>
               <Link
                 to="/faecher?from=anker"
-                className="w-12 flex items-center justify-center text-xl bg-anker-card border border-anker-border rounded-xl text-anker-accent hover:bg-anker-bg"
+                className="w-12 flex items-center justify-center text-xl bg-anker-card border border-anker-border rounded-anker-sm text-anker-accent hover:bg-anker-bg"
                 aria-label="Fach hinzufügen"
               >
                 +
@@ -229,7 +238,8 @@ export default function AnkerForm() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full bg-anker-accent text-white py-4 rounded-xl text-base font-medium hover:opacity-90 disabled:opacity-50"
+            className="w-full bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90 disabled:opacity-50"
+            style={{ padding: '1rem 2rem', transition: 'all 0.2s ease' }}
           >
             {saving
               ? 'Speichern...'

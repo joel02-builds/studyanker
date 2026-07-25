@@ -7,7 +7,7 @@ import { formatDatum, tageSeit } from '../lib/formatDatum'
 const TIMER_STANDARD = 25
 const TIMER_MIN = 1
 const TIMER_MAX = 180
-const DEFAULT_FARBE = '#2D4A6B'
+const DEFAULT_FARBE = '#1C3A52'
 const RING_RADIUS = 60
 const RING_UMFANG = 2 * Math.PI * RING_RADIUS
 
@@ -22,6 +22,11 @@ function formatZeit(sekunden) {
   const min = Math.floor(sekunden / 60).toString().padStart(2, '0')
   const sek = (sekunden % 60).toString().padStart(2, '0')
   return `${min}:${sek}`
+}
+
+const primaryButton = {
+  padding: '1rem 2rem',
+  transition: 'all 0.2s ease',
 }
 
 export default function Dashboard() {
@@ -151,12 +156,17 @@ export default function Dashboard() {
           <p className="text-anker-muted text-base">Lädt...</p>
         ) : letzterAnker ? (
           <>
-            <h1 className="text-2xl font-semibold text-anker-accent mb-6">Dein letzter Anker</h1>
+            <h1
+              style={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 400, color: 'var(--text-primary)' }}
+              className="mb-6"
+            >
+              Dein letzter Anker
+            </h1>
             <div
-              className="bg-anker-card rounded-2xl border border-anker-border p-6 mb-4 space-y-4"
+              className="bg-anker-card rounded-anker shadow-anker p-6 mb-4 space-y-4"
               style={{
                 borderLeft: `4px solid ${fachFarbe(letzterAnker.fach)}`,
-                backgroundColor: hexZuRgba(fachFarbe(letzterAnker.fach), 0.1),
+                backgroundColor: hexZuRgba(fachFarbe(letzterAnker.fach), 0.06),
               }}
             >
               <p className="text-lg font-semibold text-anker-text">{letzterAnker.fach}</p>
@@ -177,14 +187,18 @@ export default function Dashboard() {
 
               {letzterAnker.naechster_schritt && (
                 <div>
-                  <p className="text-sm text-anker-accent font-medium mb-1">Nächster Schritt</p>
-                  <p className="text-base font-semibold text-anker-text">→ {letzterAnker.naechster_schritt}</p>
+                  <p className="text-xs uppercase text-anker-accent2 font-medium mb-1" style={{ letterSpacing: '0.08em' }}>
+                    Nächster Schritt
+                  </p>
+                  <p className="text-anker-text font-semibold" style={{ fontSize: '1.1rem' }}>
+                    → {letzterAnker.naechster_schritt}
+                  </p>
                 </div>
               )}
             </div>
 
             {letzterAnker.feynman_satz && !timerLaeuft && !timerFertig && (
-              <div className="bg-anker-card rounded-2xl border border-anker-border p-6 mb-4 space-y-3">
+              <div className="bg-anker-card rounded-anker shadow-anker p-6 mb-4 space-y-3">
                 <p className="text-base text-anker-text">
                   Erinnerst du dich noch? → {letzterAnker.feynman_satz}
                 </p>
@@ -193,7 +207,7 @@ export default function Dashboard() {
                   placeholder="Was fällt dir dazu noch ein?"
                   value={retrievalAntwort}
                   onChange={(e) => setRetrievalAntwort(e.target.value)}
-                  className="w-full px-4 py-2 text-base bg-anker-bg border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+                  className="w-full px-4 py-2 text-base bg-anker-bg border border-anker-border rounded-anker-sm focus:outline-none focus:ring-2 focus:ring-anker-accent2/40 focus:border-anker-accent2"
                 />
               </div>
             )}
@@ -228,10 +242,10 @@ export default function Dashboard() {
 
             {reinschauenOffen && (
               <div
-                className="bg-anker-card rounded-2xl border border-anker-border p-5 mb-4 space-y-3"
+                className="bg-anker-card rounded-anker shadow-anker p-5 mb-4 space-y-3"
                 style={{
                   borderLeft: `4px solid ${fachFarbe(letzterAnker.fach)}`,
-                  backgroundColor: hexZuRgba(fachFarbe(letzterAnker.fach), 0.1),
+                  backgroundColor: hexZuRgba(fachFarbe(letzterAnker.fach), 0.06),
                 }}
               >
                 <div className="flex items-center gap-2">
@@ -249,7 +263,8 @@ export default function Dashboard() {
                 )}
                 <button
                   onClick={() => setReinschauenOffen(false)}
-                  className="w-full text-center bg-anker-accent text-white py-2 rounded-xl text-base font-medium hover:opacity-90"
+                  className="w-full text-center bg-anker-accent text-white rounded-anker font-medium hover:opacity-90"
+                  style={{ padding: '0.6rem 1rem', transition: 'all 0.2s ease' }}
                 >
                   Alles klar, weiter ✓
                 </button>
@@ -258,30 +273,33 @@ export default function Dashboard() {
 
             <Link
               to="/anker/neu"
-              className="block w-full text-center bg-anker-accent text-white py-4 rounded-xl text-base font-medium hover:opacity-90 mb-6"
+              className="block w-full text-center bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90 mb-8"
+              style={primaryButton}
             >
               Neuen Anker setzen
             </Link>
 
-            <div className="mb-8">
+            <div className="mb-8 text-center">
               {timerFertig ? (
-                <div className="bg-anker-card rounded-xl border border-anker-border p-5 text-center space-y-3">
+                <div className="space-y-3">
                   <p className="text-base text-anker-text mb-1">{timerMinuten} Minuten geschafft! 🎉</p>
                   <Link
                     to="/anker/neu"
-                    className="block w-full text-center bg-anker-accent text-white py-3 rounded-xl text-base font-medium hover:opacity-90"
+                    className="block w-full text-center bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90"
+                    style={{ padding: '0.75rem 1.5rem', transition: 'all 0.2s ease' }}
                   >
                     Anker aktualisieren ⚓
                   </Link>
                   <button
                     onClick={timerStarten}
-                    className="block w-full text-center border border-anker-border text-anker-text py-3 rounded-xl text-base font-medium hover:bg-anker-bg"
+                    className="block w-full text-center border border-anker-border text-anker-text rounded-anker text-base font-medium hover:bg-anker-bg"
+                    style={{ padding: '0.75rem 1.5rem', transition: 'all 0.2s ease' }}
                   >
                     Weiterlaufen — ich bin im Flow 🌊
                   </button>
                 </div>
               ) : timerLaeuft ? (
-                <div className="bg-anker-card rounded-xl border border-anker-border p-5 text-center">
+                <div>
                   <div className="relative mx-auto mb-4" style={{ width: 140, height: 140 }}>
                     <svg width="140" height="140" viewBox="0 0 140 140">
                       <circle
@@ -289,7 +307,7 @@ export default function Dashboard() {
                         cy="70"
                         r={RING_RADIUS}
                         fill="none"
-                        stroke="var(--color-border)"
+                        stroke="var(--border)"
                         strokeWidth="8"
                       />
                       <circle
@@ -297,7 +315,7 @@ export default function Dashboard() {
                         cy="70"
                         r={RING_RADIUS}
                         fill="none"
-                        stroke="var(--color-accent)"
+                        stroke="var(--accent-primary)"
                         strokeWidth="8"
                         strokeLinecap="round"
                         strokeDasharray={RING_UMFANG}
@@ -307,23 +325,25 @@ export default function Dashboard() {
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-2xl font-semibold text-anker-accent tracking-wide">
+                      <span
+                        style={{ fontFamily: 'Fraunces, serif', color: 'var(--accent-primary)' }}
+                        className="text-3xl tracking-wide"
+                      >
                         {formatZeit(verbleibend)}
                       </span>
                     </div>
                   </div>
                   <button
                     onClick={timerAbbrechen}
-                    className="w-full text-center border border-anker-border text-anker-text py-2 rounded-xl text-sm font-medium hover:bg-anker-bg"
+                    className="border border-anker-border text-anker-muted rounded-anker text-sm font-medium hover:bg-anker-subtle"
+                    style={{ padding: '0.5rem 1.25rem', transition: 'all 0.2s ease' }}
                   >
                     Timer läuft... (abbrechen)
                   </button>
                 </div>
               ) : (
-                <div className="bg-anker-card rounded-xl border border-anker-border p-4">
-                  <label className="block text-sm text-anker-muted mb-2 text-center">
-                    Wie viele Minuten?
-                  </label>
+                <div>
+                  <p className="text-sm text-anker-faint mb-3">Fokus-Timer</p>
                   <div className="flex items-center justify-center gap-3 mb-4">
                     <input
                       type="number"
@@ -345,14 +365,16 @@ export default function Dashboard() {
                           setTimerMinuten(TIMER_STANDARD)
                         }
                       }}
-                      className="w-20 text-center text-xl font-semibold text-anker-accent border border-anker-border rounded-xl py-2 focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+                      style={{ fontFamily: 'Fraunces, serif', color: 'var(--accent-primary)' }}
+                      className="w-20 text-center text-3xl border border-anker-border rounded-anker-sm py-1 focus:outline-none focus:ring-2 focus:ring-anker-accent2/40 focus:border-anker-accent2 bg-transparent"
                     />
                     <span className="text-base text-anker-muted">Minuten</span>
                   </div>
                   <button
                     onClick={timerStarten}
                     disabled={timerMinuten === ''}
-                    className="block w-full text-center border border-anker-accent text-anker-accent py-2 rounded-xl text-sm font-medium hover:bg-anker-bg disabled:opacity-50"
+                    className="border border-anker-accent text-anker-accent rounded-anker text-sm font-medium hover:bg-anker-subtle disabled:opacity-50"
+                    style={{ padding: '0.5rem 1.25rem', transition: 'all 0.2s ease' }}
                   >
                     ⏱ Fokus-Timer starten ({timerMinuten || TIMER_STANDARD} Min)
                   </button>
@@ -369,14 +391,17 @@ export default function Dashboard() {
                 className="mx-auto mb-4"
                 style={{ height: '80px' }}
               />
-              <h1 className="text-2xl font-semibold text-anker-accent">
+              <h1
+                style={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 400, color: 'var(--text-primary)' }}
+              >
                 Stan ist bereit — setz deinen ersten Anker ⚓
               </h1>
             </div>
 
             <Link
               to="/anker/neu"
-              className="block w-full text-center bg-anker-accent text-white py-4 rounded-xl text-base font-medium hover:opacity-90 mb-6"
+              className="block w-full text-center bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90 mb-6"
+              style={primaryButton}
             >
               Neuen Anker setzen
             </Link>
@@ -399,7 +424,7 @@ export default function Dashboard() {
               {weitereAnker.map((a) => (
                 <div
                   key={a.id}
-                  className="relative bg-anker-card rounded-xl border border-anker-border px-4 py-3"
+                  className="relative bg-anker-card rounded-anker-sm shadow-anker px-4 py-3"
                   style={{ borderLeft: `4px solid ${fachFarbe(a.fach)}` }}
                 >
                   {loeschenBestaetigen === a.id ? (
@@ -408,13 +433,13 @@ export default function Dashboard() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => ankerLoeschen(a.id)}
-                          className="text-sm text-red-600 font-medium px-2 py-1 hover:bg-red-50 rounded-lg"
+                          className="text-sm text-red-600 font-medium px-2 py-1 hover:bg-red-50 rounded-anker-sm"
                         >
                           Löschen
                         </button>
                         <button
                           onClick={() => setLoeschenBestaetigen(null)}
-                          className="text-sm text-anker-muted px-2 py-1 hover:bg-anker-bg rounded-lg"
+                          className="text-sm text-anker-muted px-2 py-1 hover:bg-anker-bg rounded-anker-sm"
                         >
                           Abbrechen
                         </button>
@@ -437,7 +462,7 @@ export default function Dashboard() {
                   )}
 
                   {offenesMenu === a.id && loeschenBestaetigen !== a.id && (
-                    <div className="absolute right-4 top-full mt-1 bg-anker-card border border-anker-border rounded-xl shadow-md overflow-hidden z-10">
+                    <div className="absolute right-4 top-full mt-1 bg-anker-card border border-anker-border rounded-anker-sm shadow-anker-hover overflow-hidden z-10">
                       <button
                         onClick={() => navigate(`/anker/bearbeiten/${a.id}`)}
                         className="block w-full text-left px-4 py-2 text-base text-anker-text hover:bg-anker-bg"

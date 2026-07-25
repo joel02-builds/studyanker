@@ -65,8 +65,12 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-anker-bg px-6">
       <div className="w-full max-w-[400px]">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-semibold text-anker-accent">StudyAnker</h1>
-          <p className="mt-2 text-anker-muted text-base">Weißt du noch wo du warst?</p>
+          <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: '2.25rem', fontWeight: 400, color: 'var(--accent-primary)' }}>
+            StudyAnker
+          </h1>
+          <p className="mt-2 text-base" style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+            Weißt du noch wo du warst?
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -77,7 +81,7 @@ export default function Auth() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="w-full px-4 py-3 text-base bg-anker-card border-[1.5px] border-anker-border rounded-anker-sm focus:outline-none focus:ring-2 focus:ring-anker-accent2/30 focus:border-anker-accent2"
             />
           </div>
 
@@ -89,7 +93,7 @@ export default function Auth() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="w-full px-4 py-3 text-base bg-anker-card border-[1.5px] border-anker-border rounded-anker-sm focus:outline-none focus:ring-2 focus:ring-anker-accent2/30 focus:border-anker-accent2"
             />
           </div>
 
@@ -99,7 +103,8 @@ export default function Auth() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-anker-accent text-white py-3 rounded-xl text-base font-medium hover:opacity-90 disabled:opacity-50"
+            className="w-full bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90 disabled:opacity-50"
+            style={{ padding: '1rem 2rem', transition: 'all 0.2s ease' }}
           >
             {loading ? '...' : mode === 'signin' ? 'Einloggen' : 'Registrieren'}
           </button>
@@ -115,7 +120,7 @@ export default function Auth() {
         )}
 
         {resetOffen && (
-          <form onSubmit={handleReset} className="mt-4 p-4 bg-anker-card border border-anker-border rounded-xl space-y-3">
+          <form onSubmit={handleReset} className="mt-4 p-4 bg-anker-card border border-anker-border rounded-anker space-y-3">
             <label className="block text-sm text-anker-muted">
               Wir schicken dir einen Link zum Zurücksetzen.
             </label>
@@ -125,7 +130,7 @@ export default function Auth() {
               placeholder="E-Mail"
               value={resetEmail}
               onChange={(e) => setResetEmail(e.target.value)}
-              className="w-full px-3 py-2 text-base bg-anker-card border border-anker-border rounded-lg focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="w-full px-3 py-2 text-base bg-anker-card border-[1.5px] border-anker-border rounded-anker-sm focus:outline-none focus:ring-2 focus:ring-anker-accent2/30 focus:border-anker-accent2"
             />
 
             {resetError && <p className="text-sm text-red-600">{resetError}</p>}
@@ -134,7 +139,7 @@ export default function Auth() {
             <button
               type="submit"
               disabled={resetLoading}
-              className="w-full bg-anker-accent text-white py-2 rounded-lg text-base font-medium hover:opacity-90 disabled:opacity-50"
+              className="w-full bg-anker-accent text-white py-2 rounded-anker-sm text-base font-medium hover:opacity-90 disabled:opacity-50"
             >
               {resetLoading ? '...' : 'Link senden'}
             </button>

@@ -57,7 +57,7 @@ export default function KiZusammenfassung() {
 
         <div className="flex items-center gap-3 mt-6 mb-8">
           <img src="/maskottchen.png" alt="Stan, StudyAnker Maskottchen" style={{ height: '40px' }} />
-          <h1 className="text-2xl font-semibold text-anker-accent">
+          <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 400, color: 'var(--text-primary)' }}>
             Mein Lernkontext
           </h1>
         </div>
@@ -70,7 +70,7 @@ export default function KiZusammenfassung() {
         )}
 
         {status === 'fertig' && (
-          <div className="bg-anker-card rounded-2xl border border-anker-border p-6 space-y-3 text-lg text-anker-text leading-relaxed">
+          <div className="bg-anker-card rounded-anker shadow-anker p-6 space-y-3 text-lg text-anker-text leading-relaxed">
             <ReactMarkdown
               components={{
                 p: ({ children }) => <p>{children}</p>,
@@ -83,7 +83,7 @@ export default function KiZusammenfassung() {
         )}
 
         {status === 'fehler' && (
-          <div className="bg-anker-card rounded-2xl border border-red-200 p-6">
+          <div className="bg-anker-card rounded-anker shadow-anker p-6" style={{ border: '1.5px solid #DC2626' }}>
             <p className="text-sm text-anker-muted mb-2">Fehlerdetails</p>
             <p className="text-base text-red-600 break-words whitespace-pre-wrap font-mono">{fehler}</p>
           </div>

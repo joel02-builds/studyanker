@@ -4,8 +4,8 @@
   "description": "Lernbegleiter für den Wiedereinstieg nach Lernpausen",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#2D4A6B",
-  "background_color": "#F8F7F4",
+  "theme_color": "#1C3A52",
+  "background_color": "#F5F3EF",
   "icons": [
     {
       "src": "/icon-192.svg",

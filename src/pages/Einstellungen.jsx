@@ -35,11 +35,14 @@ export default function Einstellungen() {
           ← Zurück
         </Link>
 
-        <h1 className="text-2xl font-semibold text-anker-accent mt-6 mb-8">
+        <h1
+          style={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 400, color: 'var(--text-primary)' }}
+          className="mt-6 mb-8"
+        >
           Einstellungen
         </h1>
 
-        <div className="bg-anker-card rounded-2xl border border-anker-border p-6 mb-6">
+        <div className="bg-anker-card rounded-anker shadow-anker p-6 mb-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-base font-medium text-anker-text">Dark Mode</p>
@@ -50,7 +53,7 @@ export default function Einstellungen() {
               role="switch"
               aria-checked={theme === 'dark'}
               className="relative w-14 h-8 rounded-full transition-colors"
-              style={{ backgroundColor: theme === 'dark' ? 'var(--color-accent)' : '#CBD5E1' }}
+              style={{ backgroundColor: theme === 'dark' ? 'var(--accent-primary)' : 'var(--border)' }}
             >
               <span
                 className="absolute top-1 w-6 h-6 rounded-full bg-white transition-transform"
@@ -62,7 +65,7 @@ export default function Einstellungen() {
 
         <Link
           to="/faecher"
-          className="block bg-anker-card rounded-2xl border border-anker-border p-6 mb-6 text-base text-anker-text hover:opacity-80"
+          className="block bg-anker-card rounded-anker shadow-anker p-6 mb-6 text-base text-anker-text hover:opacity-80"
         >
           Fächer verwalten
         </Link>
@@ -71,7 +74,7 @@ export default function Einstellungen() {
           {error && <p className="text-base text-red-600 mb-4">{error}</p>}
 
           {loeschenBestaetigen ? (
-            <div className="bg-anker-card rounded-2xl border border-red-300 p-6 space-y-4">
+            <div className="bg-anker-card rounded-anker shadow-anker p-6 space-y-4" style={{ border: '1.5px solid #DC2626' }}>
               <p className="text-base text-anker-text">
                 Wirklich? Alle Daten werden gelöscht.
               </p>
@@ -79,13 +82,13 @@ export default function Einstellungen() {
                 <button
                   onClick={accountLoeschen}
                   disabled={loeschenLaeuft}
-                  className="flex-1 bg-red-600 text-white py-2 rounded-xl text-base font-medium hover:opacity-90 disabled:opacity-50"
+                  className="flex-1 bg-red-600 text-white py-2 rounded-anker-sm text-base font-medium hover:opacity-90 disabled:opacity-50"
                 >
                   {loeschenLaeuft ? 'Löschen...' : 'Ja, alles löschen'}
                 </button>
                 <button
                   onClick={() => setLoeschenBestaetigen(false)}
-                  className="flex-1 border border-anker-border text-anker-text py-2 rounded-xl text-base"
+                  className="flex-1 border border-anker-border text-anker-text py-2 rounded-anker-sm text-base"
                 >
                   Abbrechen
                 </button>

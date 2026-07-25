@@ -3,30 +3,56 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #F8F7F4;
-  --color-card: #FFFFFF;
-  --color-text: #1E293B;
-  --color-muted: #94A3B8;
-  --color-accent: #2D4A6B;
-  --color-border: #E2E8F0;
+  --bg: #F5F3EF;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #EDE9E3;
+  --text-primary: #1A1A2A;
+  --text-secondary: #6B6B7B;
+  --text-muted: #9B9BAB;
+  --accent-primary: #1C3A52;
+  --accent-secondary: #4E8098;
+  --accent-sand: #C8B99A;
+  --border: #E2DDD6;
+  --shadow: 0 2px 12px rgba(28,58,82,0.08);
+  --shadow-hover: 0 4px 20px rgba(28,58,82,0.14);
+  --radius: 14px;
+  --radius-sm: 8px;
 }
 
 .dark {
-  --color-bg: #1a1a2e;
-  --color-card: #16213e;
-  --color-text: #e8e8f0;
-  --color-muted: #8888aa;
-  --color-accent: #4a7fa8;
-  --color-border: #2a2a4a;
+  --bg: #0F1923;
+  --bg-card: #162030;
+  --bg-subtle: #1C2B3A;
+  --text-primary: #E8E6E0;
+  --text-secondary: #8A9BAB;
+  --text-muted: #5A6B7B;
+  --accent-primary: #4E8098;
+  --accent-secondary: #6BA3BC;
+  --accent-sand: #8A7A6A;
+  --border: #1F3040;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
 }
 
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg);
+  color: var(--text-primary);
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
 }
 
+h1, h2, h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
 * {
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, opacity 150ms ease;
+}
+
+@keyframes anchorDrop {
+  0% { transform: translateY(-20px); opacity: 0; }
+  60% { transform: translateY(4px); opacity: 1; }
+  100% { transform: translateY(0px); opacity: 1; }
 }

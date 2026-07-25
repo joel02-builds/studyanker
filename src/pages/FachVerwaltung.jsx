@@ -9,7 +9,7 @@ export default function FachVerwaltung() {
   const [faecher, setFaecher] = useState([])
   const [loading, setLoading] = useState(true)
   const [name, setName] = useState('')
-  const [farbe, setFarbe] = useState('#2D4A6B')
+  const [farbe, setFarbe] = useState('#1C3A52')
   const [speichern, setSpeichern] = useState(false)
   const [error, setError] = useState('')
 
@@ -48,7 +48,7 @@ export default function FachVerwaltung() {
     }
 
     setName('')
-    setFarbe('#2D4A6B')
+    setFarbe('#1C3A52')
 
     const params = new URLSearchParams(window.location.search)
     if (params.get('from') === 'anker') {
@@ -71,24 +71,27 @@ export default function FachVerwaltung() {
           ← Zurück
         </Link>
 
-        <h1 className="text-2xl font-semibold text-anker-accent mt-6 mb-8">
+        <h1
+          style={{ fontFamily: 'Fraunces, serif', fontSize: '1.75rem', fontWeight: 400, color: 'var(--text-primary)' }}
+          className="mt-6 mb-8"
+        >
           Deine Fächer
         </h1>
 
-        <form onSubmit={hinzufuegen} className="bg-anker-card rounded-2xl border border-anker-border p-5 mb-8 space-y-4">
+        <form onSubmit={hinzufuegen} className="bg-anker-card rounded-anker shadow-anker p-5 mb-8 space-y-4">
           <div className="flex gap-3 items-center">
             <input
               type="color"
               value={farbe}
               onChange={(e) => setFarbe(e.target.value)}
-              className="w-12 h-12 rounded-lg border border-anker-border cursor-pointer"
+              className="w-12 h-12 rounded-anker-sm border border-anker-border cursor-pointer"
             />
             <input
               type="text"
               placeholder="Fach hinzufügen"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="flex-1 px-4 py-3 text-base bg-anker-card border border-anker-border rounded-xl focus:outline-none focus:ring-2 focus:ring-anker-accent/40 focus:border-anker-accent"
+              className="flex-1 px-4 py-3 text-base bg-anker-card border-[1.5px] border-anker-border rounded-anker-sm focus:outline-none focus:ring-2 focus:ring-anker-accent2/30 focus:border-anker-accent2"
             />
           </div>
 
@@ -97,7 +100,8 @@ export default function FachVerwaltung() {
           <button
             type="submit"
             disabled={speichern || !name.trim()}
-            className="w-full bg-anker-accent text-white py-3 rounded-xl text-base font-medium hover:opacity-90 disabled:opacity-50"
+            className="w-full bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90 disabled:opacity-50"
+            style={{ padding: '1rem 2rem', transition: 'all 0.2s ease' }}
           >
             {speichern ? 'Speichern...' : 'Fach hinzufügen'}
           </button>
@@ -112,7 +116,7 @@ export default function FachVerwaltung() {
             {faecher.map((f) => (
               <div
                 key={f.id}
-                className="flex items-center justify-between bg-anker-card rounded-xl border border-anker-border px-4 py-3"
+                className="flex items-center justify-between bg-anker-card rounded-anker-sm shadow-anker px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <span
