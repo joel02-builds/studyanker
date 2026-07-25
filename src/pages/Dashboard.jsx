@@ -25,6 +25,7 @@ function formatZeit(sekunden) {
 }
 
 const primaryButton = {
+  backgroundColor: 'var(--accent-primary)',
   padding: '1rem 2rem',
   transition: 'all 0.2s ease',
 }
@@ -69,8 +70,10 @@ export default function Dashboard() {
     setAnkerAnzahl(count ?? 0)
 
     const { data: faecher } = await supabase.from('faecher').select('name, farbe')
+    const bekannteFaecher = new Set()
     if (faecher) {
       setFachFarben(Object.fromEntries(faecher.map((f) => [f.name, f.farbe])))
+      faecher.forEach((f) => bekannteFaecher.add(f.name))
     }
 
     const { data: alleAnker } = await supabase
@@ -81,7 +84,7 @@ export default function Dashboard() {
     if (alleAnker) {
       const letzterProFach = new Map()
       for (const a of alleAnker) {
-        if (!a.fach || a.fach.trim() === '') continue
+        if (!a.fach || !bekannteFaecher.has(a.fach)) continue
         if (!letzterProFach.has(a.fach)) letzterProFach.set(a.fach, a.created_at)
       }
       setLetzterKontakt(
@@ -198,7 +201,15 @@ export default function Dashboard() {
             </div>
 
             {letzterAnker.feynman_satz && !timerLaeuft && !timerFertig && (
-              <div className="bg-anker-card rounded-anker shadow-anker p-6 mb-4 space-y-3">
+              <div
+                className="p-6 mb-4 space-y-3"
+                style={{
+                  background: 'var(--bg-subtle)',
+                  border: 'none',
+                  borderLeft: '3px solid var(--accent-secondary)',
+                  borderRadius: 'var(--radius)',
+                }}
+              >
                 <p className="text-base text-anker-text">
                   Erinnerst du dich noch? → {letzterAnker.feynman_satz}
                 </p>
@@ -235,7 +246,17 @@ export default function Dashboard() {
 
             <button
               onClick={() => setReinschauenOffen(!reinschauenOffen)}
-              className="block w-full text-center text-sm text-anker-muted hover:text-anker-text py-2 mb-2"
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                background: 'transparent',
+                border: '1.5px solid var(--border)',
+                borderRadius: 'var(--radius)',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer',
+                fontSize: '0.95rem',
+                marginBottom: '0.75rem',
+              }}
             >
               👁 Kurz reinschauen
             </button>
@@ -263,8 +284,8 @@ export default function Dashboard() {
                 )}
                 <button
                   onClick={() => setReinschauenOffen(false)}
-                  className="w-full text-center bg-anker-accent text-white rounded-anker font-medium hover:opacity-90"
-                  style={{ padding: '0.6rem 1rem', transition: 'all 0.2s ease' }}
+                  className="w-full text-center text-white rounded-anker font-medium hover:opacity-90"
+                  style={{ backgroundColor: 'var(--accent-primary)', padding: '0.6rem 1rem', transition: 'all 0.2s ease' }}
                 >
                   Alles klar, weiter ✓
                 </button>
@@ -285,8 +306,8 @@ export default function Dashboard() {
                   <p className="text-base text-anker-text mb-1">{timerMinuten} Minuten geschafft! 🎉</p>
                   <Link
                     to="/anker/neu"
-                    className="block w-full text-center bg-anker-accent text-white rounded-anker text-base font-medium hover:opacity-90"
-                    style={{ padding: '0.75rem 1.5rem', transition: 'all 0.2s ease' }}
+                    className="block w-full text-center text-white rounded-anker text-base font-medium hover:opacity-90"
+                    style={{ backgroundColor: 'var(--accent-primary)', padding: '0.75rem 1.5rem', transition: 'all 0.2s ease' }}
                   >
                     Anker aktualisieren ⚓
                   </Link>
