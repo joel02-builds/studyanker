@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../useTheme'
 
 export default function Einstellungen() {
   const { theme, toggleTheme } = useTheme()
-  const { user, signOut } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
   const [loeschenBestaetigen, setLoeschenBestaetigen] = useState(false)
   const [loeschenLaeuft, setLoeschenLaeuft] = useState(false)
   const [error, setError] = useState('')
@@ -16,24 +16,16 @@ export default function Einstellungen() {
     setError('')
 
     try {
-      const response = await fetch('/api/delete-account', {
+      await fetch('/api/delete-account', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id }),
       })
+    } catch (e) {}
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error ?? `Serverfehler (${response.status})`)
-      }
-
-      await signOut().catch(() => {})
-      navigate('/login')
-    } catch (e) {
-      setError(e.message)
-      setLoeschenLaeuft(false)
-    }
+    // Session lokal clearen ohne Server-Call
+    await supabase.auth.signOut({ scope: 'local' })
+    window.location.href = '/'
   }
 
   return (
