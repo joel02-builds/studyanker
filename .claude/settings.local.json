@@ -28,7 +28,10 @@
       "Bash(node test-delete-load.cjs)",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('C:/Users/heide/Desktop/StudyAnker App !!/vercel.json', 'utf-8'\\)\\); console.log\\('JSON gültig'\\)\")",
       "Bash(node --check \"C:\\\\Users\\\\heide\\\\Desktop\\\\StudyAnker App !!\\\\api\\\\ping.js\")",
-      "Bash(node --check \"C:\\\\Users\\\\heide\\\\Desktop\\\\StudyAnker App !!\\\\api\\\\delete-account.js\")"
+      "Bash(node --check \"C:\\\\Users\\\\heide\\\\Desktop\\\\StudyAnker App !!\\\\api\\\\delete-account.js\")",
+      "Read(//c/Users/heide/**)",
+      "Read(//c/Users/heide/Downloads/**)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('C:/Users/heide/Desktop/StudyAnker App !!/public/manifest.json', 'utf-8'\\)\\); console.log\\('JSON gültig'\\)\")"
     ]
   }
 }
