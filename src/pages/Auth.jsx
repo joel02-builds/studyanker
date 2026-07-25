@@ -1,11 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { useTheme } from '../useTheme'
 
 export default function Auth() {
-  const { theme } = useTheme()
-  const isDarkMode = theme === 'dark'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [mode, setMode] = useState('signin') // 'signin' | 'signup'
@@ -67,23 +64,24 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-anker-bg px-6">
       <div className="w-full max-w-[400px]">
-        <div className="text-center mb-10">
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <img
             src="/logo.png"
             alt="StudyAnker Logo"
             style={{
-              width: '72px',
-              height: '72px',
+              width: '80px',
+              height: '80px',
               objectFit: 'contain',
               background: 'transparent',
-              mixBlendMode: isDarkMode ? 'screen' : 'multiply',
-              marginBottom: '12px',
+              mixBlendMode: 'multiply',
+              display: 'block',
+              margin: '0 auto 1rem auto',
             }}
           />
-          <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: '2.25rem', fontWeight: 400, color: 'var(--accent-primary)' }}>
+          <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: '2rem', color: 'var(--accent-primary)', margin: 0 }}>
             StudyAnker
           </h1>
-          <p className="mt-2 text-base" style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+          <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
             Weißt du noch wo du warst?
           </p>
         </div>

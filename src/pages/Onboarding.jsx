@@ -15,7 +15,19 @@ export default function Onboarding() {
       <div className="w-full max-w-[400px] text-center">
         {schritt === 1 && (
           <>
-            <img src="/logo.png" alt="StudyAnker" style={{ width: '48px', height: '48px', marginBottom: '8px' }} />
+            <img
+              src="/logo.png"
+              alt="StudyAnker"
+              style={{
+                width: '48px',
+                height: '48px',
+                objectFit: 'contain',
+                background: 'transparent',
+                mixBlendMode: 'multiply',
+                display: 'block',
+                margin: '0 auto 8px auto',
+              }}
+            />
             <img
               src="/maskottchen.png"
               alt="Stan, StudyAnker Maskottchen"
