@@ -1,6 +1,11 @@
 {
+  "functions": {
+    "api/delete-account.cjs": {
+      "runtime": "@vercel/node@3"
+    }
+  },
   "rewrites": [
-    { "source": "/api/delete-account", "destination": "/api/delete-account" },
-    { "source": "/api/(.*)", "destination": "/api/$1" }
+    { "source": "/api/zusammenfassung", "destination": "/api/zusammenfassung" },
+    { "source": "/api/delete-account", "destination": "/api/delete-account.cjs" }
   ]
 }
