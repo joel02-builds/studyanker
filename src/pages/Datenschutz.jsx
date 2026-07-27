@@ -21,8 +21,8 @@ export default function Datenschutz() {
           </p>
           <p>Keine Weitergabe an Dritte.</p>
           <p>Hosting in der EU (Supabase Frankfurt, Vercel Frankfurt).</p>
-          <p>Kontakt: [deine Email]</p>
-          <p>Anbieter: [dein Name], [deine Stadt]</p>
+          <p>Kontakt: joel.heiden@web.de</p>
+          <p>Anbieter: Joel Heiden, Erwitte</p>
         </div>
       </div>
     </div>

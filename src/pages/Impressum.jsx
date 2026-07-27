@@ -17,9 +17,9 @@ export default function Impressum() {
 
         <div className="text-base text-anker-text space-y-4" style={{ lineHeight: 1.6 }}>
           <p>Angaben gemäß § 5 TMG:</p>
-          <p>[Dein vollständiger Name]</p>
-          <p>[Deine Adresse]</p>
-          <p>[Deine Email]</p>
+          <p>Joel Heiden</p>
+          <p>Am Mühlenwall 13<br />59597 Erwitte</p>
+          <p>E-Mail: joel.heiden@web.de</p>
         </div>
       </div>
     </div>
