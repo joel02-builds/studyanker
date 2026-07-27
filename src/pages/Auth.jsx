@@ -4,12 +4,12 @@ import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../useTheme'
 import StudyAnkerLogo from '../components/StudyAnkerLogo'
 
-export default function Auth() {
+export default function Auth({ initialMode = 'signin' }) {
   const { theme } = useTheme()
   const isDarkMode = theme === 'dark'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [mode, setMode] = useState('signin') // 'signin' | 'signup'
+  const [mode, setMode] = useState(initialMode) // 'signin' | 'signup'
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
   const [loading, setLoading] = useState(false)

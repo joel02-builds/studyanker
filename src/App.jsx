@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { useTheme } from './useTheme'
+import Landing from './pages/Landing'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import AnkerForm from './pages/AnkerForm'
@@ -8,6 +9,8 @@ import KiZusammenfassung from './pages/KiZusammenfassung'
 import Onboarding from './pages/Onboarding'
 import FachVerwaltung from './pages/FachVerwaltung'
 import Einstellungen from './pages/Einstellungen'
+import Datenschutz from './pages/Datenschutz'
+import Impressum from './pages/Impressum'
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
@@ -19,7 +22,17 @@ function PrivateRoute({ children }) {
   return user ? children : <Navigate to="/login" replace />
 }
 
-function StartRoute() {
+function RootRoute() {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-anker-muted">Lädt...</div>
+  }
+
+  if (!user) {
+    return <Landing />
+  }
+
   const onboardingErledigt = localStorage.getItem('onboarding_done') === 'true'
   return onboardingErledigt ? <Dashboard /> : <Navigate to="/onboarding" replace />
 }
@@ -27,15 +40,11 @@ function StartRoute() {
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<RootRoute />} />
       <Route path="/login" element={<Auth />} />
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <StartRoute />
-          </PrivateRoute>
-        }
-      />
+      <Route path="/register" element={<Auth initialMode="signup" />} />
+      <Route path="/datenschutz" element={<Datenschutz />} />
+      <Route path="/impressum" element={<Impressum />} />
       <Route
         path="/onboarding"
         element={
