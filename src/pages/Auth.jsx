@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../useTheme'
 import StudyAnkerLogo from '../components/StudyAnkerLogo'
+import { track } from '../analytics'
 
 export default function Auth({ initialMode = 'signin' }) {
   const { theme } = useTheme()
@@ -41,8 +42,10 @@ export default function Auth({ initialMode = 'signin' }) {
     }
 
     if (mode === 'signup') {
+      track('user_registered')
       setInfo('Konto erstellt. Falls Email-Bestätigung aktiv ist, prüfe dein Postfach — sonst kannst du dich jetzt einloggen.')
     } else {
+      track('user_logged_in')
       navigate('/')
     }
   }

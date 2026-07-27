@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../useTheme'
 import StudyAnkerLogo from '../components/StudyAnkerLogo'
+import { track } from '../analytics'
 
 export default function Onboarding() {
   const [schritt, setSchritt] = useState(1)
@@ -12,6 +13,7 @@ export default function Onboarding() {
 
   function abschliessenUndWeiter() {
     localStorage.setItem('onboarding_done', 'true')
+    track('onboarding_completed')
     navigate('/anker/neu')
   }
 

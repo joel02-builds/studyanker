@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import * as Sentry from '@sentry/react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { useTheme } from './useTheme'
 import Landing from './pages/Landing'
@@ -107,4 +108,12 @@ function App() {
   )
 }
 
-export default App
+export default Sentry.withErrorBoundary(App, {
+  fallback: (
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <h2>Etwas ist schiefgelaufen.</h2>
+      <p>Bitte lade die Seite neu.</p>
+      <button onClick={() => window.location.reload()}>Neu laden</button>
+    </div>
+  ),
+})

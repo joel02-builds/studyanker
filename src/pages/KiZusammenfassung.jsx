@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import { supabase } from '../lib/supabaseClient'
+import { track } from '../analytics'
 
 export default function KiZusammenfassung() {
   const [status, setStatus] = useState('laden') // 'laden' | 'denkt' | 'fertig' | 'fehler'
@@ -39,6 +40,7 @@ export default function KiZusammenfassung() {
 
         setText(data.text)
         setStatus('fertig')
+        track('ki_zusammenfassung_viewed')
       } catch (e) {
         setFehler(e.message)
         setStatus('fehler')

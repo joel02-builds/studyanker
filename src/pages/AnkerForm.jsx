@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
 import { useSpeechInput } from '../useSpeechInput'
+import { track } from '../analytics'
 
 const LEER = { fach: '', wo_war_ich: '', was_war_wichtig: '', naechster_schritt: '', feynman_satz: '' }
 
@@ -136,6 +137,10 @@ export default function AnkerForm() {
     if (error) {
       setError(error.message)
       return
+    }
+
+    if (!bearbeitenModus) {
+      track('anker_created', { fach: form.fach, has_feynman: !!form.feynman_satz })
     }
 
     setGespeichert(true)

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
 import { formatDatum, tageSeit } from '../lib/formatDatum'
+import { track } from '../analytics'
 
 const TIMER_STANDARD = 25
 const TIMER_MIN = 1
@@ -179,6 +180,8 @@ export default function Dashboard() {
   }, [loading, anker.length])
 
   function timerStarten() {
+    track('timer_started', { minutes: timerMinuten })
+
     const sekunden = timerMinuten * 60
     setVerbleibend(sekunden)
     setGesamtSekunden(sekunden)
